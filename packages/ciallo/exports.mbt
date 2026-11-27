@@ -47,6 +47,8 @@ pub using @schema {
   coerce_string_map,
   coerce_query_params,
   normalize_json,
+  type FieldMask,
+  project_json,
 }
 
 ///|

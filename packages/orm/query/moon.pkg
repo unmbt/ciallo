@@ -1,0 +1,16 @@
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-data/telemetry",
+  "unmbt/ciallo/schema" @ciallo_schema,
+  "unmbt/ciallo-orm/schema",
+  "unmbt/ciallo-orm/ast",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+}
+
+import {
+  "unmbt/ciallo-orm/query",
+} for "test"
+
+supported_targets = "-all+native+js+wasm"

@@ -3,6 +3,7 @@ import {
   "unmbt/ciallo/core",
   "unmbt/ciallo/openapi",
   "unmbt/ciallo/runtime",
+  "unmbt/ciallo-orm/query" @orm_query,
 }
 
 #cfg(any(target = "native", target = "wasm"))
@@ -17,6 +18,9 @@ import {
 
 import {
   "moonbitlang/core/async",
+  "unmbt/ciallo-orm/schema" @orm_schema,
+  "unmbt/ciallo-orm/dialect" @orm_dialect,
+  "unmbt/ciallo-orm/driver" @orm_driver,
   "unmbt/ciallo-testing" @ciallo_testing,
 } for "test"
 

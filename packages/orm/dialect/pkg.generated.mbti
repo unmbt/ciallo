@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm/dialect"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-orm/ast",
+  "unmbt/ciallo-orm/schema",
+}
+
+// Values
+pub fn compile_delete(DialectKind, @ast.DeleteAst) -> CompiledSql
+
+pub fn compile_insert(DialectKind, @ast.InsertAst) -> CompiledSql
+
+pub fn compile_select(DialectKind, @ast.SelectAst) -> CompiledSql
+
+pub fn compile_update(DialectKind, @ast.UpdateAst) -> CompiledSql
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct CompiledSql {
+  sql : String
+  params : Array[@schema.SqlValue]
+}
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) enum DialectKind {
+  Postgres
+  MySql
+  Sqlite
+}
+
+// Type aliases
+
+// Traits

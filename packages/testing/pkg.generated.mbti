@@ -3,6 +3,7 @@ package "unmbt/ciallo-testing"
 
 import {
   "moonbitlang/core/json",
+  "unmbt/ciallo-orm/query",
   "unmbt/ciallo/core",
   "unmbt/ciallo/openapi",
   "unmbt/ciallo/runtime",
@@ -11,6 +12,9 @@ import {
 
 // Values
 pub async fn sync_openapi(@core.App, @openapi.OpenApiInfo, StringView, check_only? : Bool) -> Unit
+
+#callsite(autofill(loc))
+pub async fn[R] with_rollback_tx(@query.Db, loc~ : SourceLoc, async (@query.DbTx) -> R) -> R
 
 // Errors
 

@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-data/pool"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-data/codec",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Lease[Conn] {
+  // private fields
+}
+pub fn[Conn] Lease::conn(Self[Conn]) -> Conn
+pub fn[Conn] Lease::is_tainted(Self[Conn]) -> Bool
+pub fn[Conn] Lease::mark_tainted(Self[Conn]) -> Unit
+
+pub struct Pool[Conn] {
+  // private fields
+}
+pub fn[Conn] Pool::Pool(config? : PoolConfig, connect~ : async () -> Conn raise @codec.DataError, health_check? : async (Conn) -> Bool, close~ : async (Conn) -> Unit) -> Self[Conn]
+pub async fn[Conn] Pool::close(Self[Conn]) -> Unit
+pub fn[Conn] Pool::stats(Self[Conn]) -> PoolStats
+pub async fn[Conn, R] Pool::with_conn(Self[Conn], async (Lease[Conn]) -> R) -> R
+
+#derive(Eq, @debug.Debug)
+pub(all) struct PoolConfig {
+  max_connections : Int32
+  min_idle : Int32
+  acquire_timeout_ms : Int32
+  idle_timeout_ms : Int64
+  max_lifetime_ms : Int64
+}
+pub fn PoolConfig::PoolConfig(max_connections? : Int32, min_idle? : Int32, acquire_timeout_ms? : Int32, idle_timeout_ms? : Int64, max_lifetime_ms? : Int64) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct PoolStats {
+  total : Int32
+  idle : Int32
+  in_use : Int32
+  closed : Bool
+}
+
+// Type aliases
+
+// Traits

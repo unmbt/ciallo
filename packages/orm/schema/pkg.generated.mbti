@@ -1,0 +1,75 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm/schema"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo-data/codec",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct JsonCol[T](T)
+pub impl[T : @json.FromJson] FromSqlValue for JsonCol[T]
+pub impl[T : @json.ToJson] ToSqlValue for JsonCol[T]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SqlRow {
+  columns : Array[String]
+  values : Array[SqlValue]
+}
+pub fn SqlRow::SqlRow(columns~ : Array[String], values~ : Array[SqlValue]) -> Self
+pub fn[T : FromSqlValue] SqlRow::decode_at(Self, Int32) -> T raise @codec.DataError
+pub fn[T : FromSqlValue] SqlRow::decode_by_name(Self, StringView) -> T raise @codec.DataError
+pub fn SqlRow::get_at(Self, Int32) -> SqlValue raise @codec.DataError
+pub fn SqlRow::get_by_name(Self, StringView) -> SqlValue raise @codec.DataError
+pub impl FromRow for SqlRow
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SqlValue {
+  Null
+  Bool(Bool)
+  Int32(Int32)
+  Int64(Int64)
+  Double(Double)
+  Text(String)
+  Bytes(Bytes)
+  Json(@json.Json)
+}
+pub impl FromSqlValue for SqlValue
+pub impl ToSqlValue for SqlValue
+
+// Type aliases
+
+// Traits
+pub(open) trait FromRow {
+  fn from_row(SqlRow) -> Self raise @codec.DataError
+}
+
+pub(open) trait FromSqlValue {
+  fn from_sql_value(SqlValue) -> Self raise @codec.DataError
+}
+pub impl FromSqlValue for Bool
+pub impl FromSqlValue for Int32
+pub impl FromSqlValue for Int64
+pub impl FromSqlValue for Double
+pub impl FromSqlValue for String
+pub impl[T : FromSqlValue] FromSqlValue for T?
+pub impl FromSqlValue for Bytes
+pub impl FromSqlValue for @json.Json
+
+pub(open) trait ToSqlValue {
+  fn to_sql_value(Self) -> SqlValue
+}
+pub impl ToSqlValue for Bool
+pub impl ToSqlValue for Int32
+pub impl ToSqlValue for Int64
+pub impl ToSqlValue for Double
+pub impl ToSqlValue for String
+pub impl[T : ToSqlValue] ToSqlValue for T?
+pub impl ToSqlValue for Bytes
+pub impl ToSqlValue for @json.Json

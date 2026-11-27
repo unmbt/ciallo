@@ -1,0 +1,234 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm/ast"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-orm/schema",
+}
+
+// Values
+pub fn and_all(Array[Expr?]) -> Expr?
+
+pub fn[Table] avg_f64(Col[Table, Int64]) -> Projection[Double?]
+
+pub fn[Table, Val] col_proj(Col[Table, Val], alias_? : String) -> Projection[Val]
+
+pub fn[Table, Val] count(Col[Table, Val]) -> Projection[Int64]
+
+pub fn count_all() -> Projection[Int64]
+
+pub fn or_all(Array[Expr?]) -> Expr?
+
+pub fn[Table] sum_i64(Col[Table, Int64]) -> Projection[Int64?]
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) enum AggFunc {
+  Count
+  Sum
+  Avg
+  Min
+  Max
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum BinaryOp {
+  Eq
+  Ne
+  Lt
+  Lte
+  Gt
+  Gte
+  Like
+  ILike
+  Add
+  Sub
+  Mul
+  Div
+}
+
+pub struct Col[Table, Val] {
+  table : String
+  alias_ : String?
+  name : String
+  nullable : Bool
+  // private fields
+}
+pub fn[Table, Val] Col::Col(table~ : String, name~ : String, alias_? : String, nullable? : Bool) -> Self[Table, Val]
+pub fn[Table, Val] Col::as_nullable(Self[Table, Val]) -> Self[Table, Val?]
+pub fn[Table, Val] Col::asc(Self[Table, Val]) -> OrderBy
+pub fn[Table, Val : @schema.ToSqlValue] Col::between(Self[Table, Val], Val, Val) -> Expr
+pub fn[Table] Col::contains(Self[Table, String], String) -> Expr
+pub fn[Table, Val] Col::desc(Self[Table, Val]) -> OrderBy
+pub fn[Table] Col::ends_with(Self[Table, String], String) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::eq(Self[Table, Val], Val) -> Expr
+pub fn[TableA, TableB, Val] Col::eq_col(Self[TableA, Val], Self[TableB, Val]) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::gt(Self[Table, Val], Val) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::gte(Self[Table, Val], Val) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::in_list(Self[Table, Val], Array[Val]) -> Expr
+pub fn[Table, Val] Col::is_not_null(Self[Table, Val?]) -> Expr
+pub fn[Table, Val] Col::is_null(Self[Table, Val?]) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::lt(Self[Table, Val], Val) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::lte(Self[Table, Val], Val) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::ne(Self[Table, Val], Val) -> Expr
+pub fn[Table, Val : @schema.ToSqlValue] Col::not_in_list(Self[Table, Val], Array[Val]) -> Expr
+pub fn[Table] Col::starts_with(Self[Table, String], String) -> Expr
+pub fn[Table, Val] Col::to_expr(Self[Table, Val]) -> Expr
+pub impl[Table, Val] Eq for Col[Table, Val]
+pub impl[Table, Val] @debug.Debug for Col[Table, Val]
+
+#derive(Eq, @debug.Debug)
+pub(all) enum ConflictAction {
+  DoNothing
+  DoUpdate(set_columns~ : Array[String])
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct DeleteAst {
+  table : String
+  soft_delete_col : String?
+  tenant_col : String?
+  where_clause : Expr?
+  returning : Array[String]
+}
+pub fn DeleteAst::DeleteAst(table~ : String, soft_delete_col? : String, tenant_col? : String, where_clause? : Expr, returning? : Array[String]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Expr {
+  Raw(sql~ : String, params~ : Array[@schema.SqlValue])
+  Column(table~ : String, name~ : String)
+  Param(@schema.SqlValue)
+  Binary(left~ : Expr, op~ : BinaryOp, right~ : Expr)
+  Unary(op~ : UnaryOp, expr~ : Expr)
+  InList(expr~ : Expr, values~ : Array[@schema.SqlValue], negated~ : Bool)
+  Between(expr~ : Expr, low~ : @schema.SqlValue, high~ : @schema.SqlValue)
+  And(Array[Expr])
+  Or(Array[Expr])
+  Not(Expr)
+  Agg(func~ : AggFunc, expr~ : Expr?)
+}
+pub fn Expr::and_(Self, Self) -> Self
+pub fn Expr::not_(Self) -> Self
+pub fn Expr::or_(Self, Self) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct InsertAst {
+  table : String
+  tenant_col : String?
+  columns : Array[String]
+  values : Array[Array[@schema.SqlValue]]
+  on_conflict : OnConflict?
+  returning : Array[String]
+}
+pub fn InsertAst::InsertAst(table~ : String, columns~ : Array[String], values~ : Array[Array[@schema.SqlValue]], tenant_col? : String, on_conflict? : OnConflict, returning? : Array[String]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct JoinClause {
+  kind : JoinKind
+  table : String
+  alias_ : String?
+  on : Expr
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum JoinKind {
+  Inner
+  Left
+  Right
+  Full
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct OnConflict {
+  target_columns : Array[String]
+  action : ConflictAction
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct OrderBy {
+  expr : Expr
+  dir : SortDir
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum Patch[T] {
+  Keep
+  Set(T)
+  Clear
+}
+
+pub struct Projection[Val] {
+  expr : Expr
+  alias_ : String?
+  // private fields
+}
+pub fn[Val] Projection::Projection(expr~ : Expr, alias_? : String) -> Self[Val]
+pub impl[Val] Eq for Projection[Val]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SelectAst {
+  columns : Array[SelectColumn]
+  from_table : String
+  from_alias : String?
+  soft_delete_col : String?
+  tenant_col : String?
+  joins : Array[JoinClause]
+  where_clause : Expr?
+  group_by : Array[Expr]
+  having : Expr?
+  order_by : Array[OrderBy]
+  limit : Int32?
+  offset : Int32?
+  distinct : Bool
+}
+pub fn SelectAst::SelectAst(from_table~ : String, from_alias? : String, columns? : Array[SelectColumn], soft_delete_col? : String, tenant_col? : String, joins? : Array[JoinClause], where_clause? : Expr, group_by? : Array[Expr], having? : Expr, order_by? : Array[OrderBy], limit? : Int32, offset? : Int32, distinct? : Bool) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SelectColumn {
+  expr : Expr
+  alias_ : String?
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SortDir {
+  Asc
+  Desc
+}
+
+pub struct TableRef[Table] {
+  name : String
+  alias_ : String?
+  soft_delete_col : String?
+  tenant_col : String?
+  version_col : String?
+  // private fields
+}
+pub fn[Table] TableRef::TableRef(name~ : String, alias_? : String, soft_delete_col? : String, tenant_col? : String, version_col? : String) -> Self[Table]
+pub fn[Table] TableRef::aliased(Self[Table], String) -> Self[Table]
+pub fn[Table] TableRef::effective_name(Self[Table]) -> String
+pub impl[Table] Eq for TableRef[Table]
+pub impl[Table] @debug.Debug for TableRef[Table]
+
+#derive(Eq, @debug.Debug)
+pub(all) enum UnaryOp {
+  IsNull
+  IsNotNull
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct UpdateAst {
+  table : String
+  tenant_col : String?
+  version_col : String?
+  expected_version : Int64?
+  assignments : Array[(String, Expr)]
+  where_clause : Expr?
+  returning : Array[String]
+}
+pub fn UpdateAst::UpdateAst(table~ : String, assignments~ : Array[(String, Expr)], tenant_col? : String, version_col? : String, expected_version? : Int64, where_clause? : Expr, returning? : Array[String]) -> Self
+
+// Type aliases
+
+// Traits

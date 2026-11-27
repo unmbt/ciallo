@@ -21,6 +21,8 @@ pub fn coerce_string_map(Map[String, String], @schema.SchemaNode) -> @json.Json 
 
 pub fn normalize_json(@json.Json, @schema.SchemaNode) -> @json.Json
 
+pub fn project_json(@json.Json, @schema.SchemaNode, @schema.FieldMask) -> @json.Json
+
 pub let remote_addr_key : @runtime.ContextKey[String]
 
 pub fn scalar_html(title~ : String, spec_url? : String, script_url? : String, custom_css? : String) -> String
@@ -65,6 +67,8 @@ pub using @runtime {type Env}
 pub using @runtime {type EnvBuilder}
 
 pub using @runtime {type ExecutionContext}
+
+pub using @schema {type FieldMask}
 
 pub using @runtime {type FixedClock}
 

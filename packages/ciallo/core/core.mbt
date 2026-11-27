@@ -692,6 +692,7 @@ pub(all) struct RouteOptions {
   response_kind : @openapi.ResponseKind?
   error_responses : Array[@openapi.ResponseSpec]
   bearer_auth : Bool
+  allow_sparse_fields : Bool
   before_handle : Array[async (Context) -> @http.Response?]
   after_handle : Array[async (Context, @http.Response) -> @http.Response]
 }
@@ -713,6 +714,7 @@ pub fn RouteOptions::RouteOptions(
   response_kind? : @openapi.ResponseKind,
   error_responses~ : Array[@openapi.ResponseSpec] = [],
   bearer_auth~ : Bool = false,
+  allow_sparse_fields~ : Bool = false,
   before_handle~ : Array[async (Context) -> @http.Response?] = [],
   after_handle~ : Array[async (Context, @http.Response) -> @http.Response] = [],
 ) -> RouteOptions {
@@ -732,6 +734,7 @@ pub fn RouteOptions::RouteOptions(
     response_kind,
     error_responses: error_responses.copy(),
     bearer_auth,
+    allow_sparse_fields,
     before_handle: before_handle.copy(),
     after_handle: after_handle.copy(),
   }

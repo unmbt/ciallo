@@ -1,0 +1,16 @@
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-redis/client" @redis_client,
+}
+
+import {
+  "moonbitlang/core/encoding/utf8",
+  "unmbt/webstd/http",
+  "unmbt/ciallo-redis/resp",
+  "unmbt/ciallo-redis-plugin" @redis_plugin,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"

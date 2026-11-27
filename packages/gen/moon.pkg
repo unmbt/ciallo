@@ -1,5 +1,6 @@
 import {
   "moonbitlang/core/string",
+  "unmbt/ciallo-migrate" @migrate,
 }
 
 import {

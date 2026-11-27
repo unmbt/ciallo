@@ -1,0 +1,5 @@
+import {
+  "unmbt/ciallo-data/codec",
+} for "test"
+
+supported_targets = "-all+native+js+wasm+wasm-gc"

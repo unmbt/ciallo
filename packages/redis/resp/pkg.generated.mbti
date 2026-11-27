@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-redis/resp"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-data/codec",
+}
+
+// Values
+pub fn decode_resp(BytesView) -> (RespValue, Int32)? raise @codec.DataError
+
+pub fn encode_command(Array[Bytes]) -> Bytes
+
+pub fn encode_value(RespValue) -> Bytes
+
+// Errors
+
+// Types and methods
+pub struct RespDecoder {
+  // private fields
+}
+pub fn RespDecoder::RespDecoder() -> Self
+pub fn RespDecoder::feed(Self, BytesView) -> Unit
+pub fn RespDecoder::next_frame(Self) -> RespValue? raise @codec.DataError
+
+#derive(Eq, @debug.Debug)
+pub(all) enum RespValue {
+  SimpleString(String)
+  SimpleError(String)
+  Integer(Int64)
+  BulkString(Bytes)
+  Null
+  Array(Array[RespValue])
+  Boolean(Bool)
+  Double(Double)
+  Map(Array[(RespValue, RespValue)])
+  Set(Array[RespValue])
+  Push(Array[RespValue])
+}
+
+// Type aliases
+
+// Traits

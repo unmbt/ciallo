@@ -1,0 +1,26 @@
+import {
+  "moonbitlang/core/async",
+  "moonbitlang/core/encoding/utf8",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-data/telemetry",
+  "unmbt/ciallo-redis/resp",
+}
+
+#cfg(any(target = "native", target = "wasm"))
+import {
+  "moonbitlang/core/async/socket",
+}
+
+import {
+  "moonbitlang/core/string",
+  "unmbt/ciallo-redis/client",
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  targets: {
+    "tcp_transport.mbt": [ "native", "wasm" ],
+    "tcp_transport_js.mbt": [ "js" ],
+  },
+)

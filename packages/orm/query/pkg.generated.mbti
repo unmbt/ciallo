@@ -1,0 +1,156 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm/query"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-data/telemetry",
+  "unmbt/ciallo-orm/ast",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+}
+
+// Values
+pub fn expand_named_sql(@dialect.DialectKind, String, Array[(String, @unmbt/ciallo-orm/schema.SqlValue)]) -> @dialect.CompiledSql raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, C, P : @unmbt/ciallo-orm/schema.FromRow, K : Eq + Hash + @unmbt/ciallo-orm/schema.ToSqlValue] preload_belongs_to(E, Array[C], child_fk~ : (C) -> K, parent_table~ : String, pk_col~ : String, parent_key~ : (P) -> K, loc~ : SourceLoc) -> Array[(C, P?)] raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, P, C : @unmbt/ciallo-orm/schema.FromRow, K : Eq + Hash + @unmbt/ciallo-orm/schema.ToSqlValue] preload_has_many(E, Array[P], parent_key~ : (P) -> K, child_table~ : String, fk_col~ : String, child_fk~ : (C) -> K, loc~ : SourceLoc) -> Array[(P, Array[C])] raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor] raw_exec(E, String, params? : Array[(String, @unmbt/ciallo-orm/schema.SqlValue)], loc~ : SourceLoc) -> @driver.ExecResult raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, T : @unmbt/ciallo-orm/schema.FromRow] raw_query(E, String, params? : Array[(String, @unmbt/ciallo-orm/schema.SqlValue)], loc~ : SourceLoc) -> Array[T] raise @codec.DataError
+
+pub fn[A] select1(@ast.Projection[A]) -> SelectBuilder1[A]
+
+pub fn[A, B] select2(@ast.Projection[A], @ast.Projection[B]) -> SelectBuilder2[A, B]
+
+pub fn[A, B, C] select3(@ast.Projection[A], @ast.Projection[B], @ast.Projection[C]) -> SelectBuilder3[A, B, C]
+
+// Errors
+
+// Types and methods
+pub struct AuditHook {
+  created_at_col : String?
+  updated_at_col : String?
+}
+pub fn AuditHook::AuditHook(created_at_col? : String, updated_at_col? : String) -> Self
+pub impl QueryHook for AuditHook
+
+pub struct Db {
+  // private fields
+}
+pub fn Db::Db(&@driver.SqlDriver, hooks? : Array[&QueryHook], telemetry? : @telemetry.TelemetryConfig, default_ctx? : QueryContext) -> Self
+pub fn Db::default_context(Self) -> QueryContext
+#callsite(autofill(loc))
+pub async fn Db::delete(Self, @ast.DeleteAst, ctx? : QueryContext, loc~ : SourceLoc) -> @driver.ExecResult raise @codec.DataError
+pub fn Db::dialect(Self) -> @dialect.DialectKind
+pub async fn Db::exec_mutate(Self, String, Array[@unmbt/ciallo-orm/schema.SqlValue], SourceLoc) -> @driver.ExecResult raise @codec.DataError
+pub async fn Db::exec_query_rows(Self, String, Array[@unmbt/ciallo-orm/schema.SqlValue], SourceLoc) -> Array[@unmbt/ciallo-orm/schema.SqlRow] raise @codec.DataError
+#callsite(autofill(loc))
+pub async fn[T : @unmbt/ciallo-orm/schema.FromRow] Db::find_all(Self, @ast.SelectAst, ctx? : QueryContext, loc~ : SourceLoc) -> Array[T] raise @codec.DataError
+#callsite(autofill(loc))
+pub async fn[T : @unmbt/ciallo-orm/schema.FromRow] Db::find_cursor_page(Self, @ast.SelectAst, limit? : Int32, extract_cursor~ : (T) -> String, ctx? : QueryContext, loc~ : SourceLoc) -> @unmbt/ciallo/schema.CursorPage[T] raise @codec.DataError
+#callsite(autofill(loc))
+pub async fn[T : @unmbt/ciallo-orm/schema.FromRow] Db::find_page(Self, @ast.SelectAst, page? : Int32, page_size? : Int32, ctx? : QueryContext, loc~ : SourceLoc) -> @unmbt/ciallo/schema.Page[T] raise @codec.DataError
+pub fn Db::hooks(Self) -> Array[&QueryHook]
+#callsite(autofill(loc))
+pub async fn Db::insert(Self, @ast.InsertAst, ctx? : QueryContext, loc~ : SourceLoc) -> @driver.ExecResult raise @codec.DataError
+pub fn Db::telemetry(Self) -> @telemetry.TelemetryConfig
+#callsite(autofill(loc))
+pub async fn[R] Db::transaction(Self, loc~ : SourceLoc, async (DbTx) -> R) -> R
+#callsite(autofill(loc))
+pub async fn[R] Db::transaction_rollback_only(Self, loc~ : SourceLoc, async (DbTx) -> R) -> R
+#callsite(autofill(loc))
+pub async fn Db::update(Self, @ast.UpdateAst, ctx? : QueryContext, loc~ : SourceLoc) -> @driver.ExecResult raise @codec.DataError
+pub fn Db::with_context(Self, QueryContext) -> Self
+pub impl @driver.SqlExecutor for Db
+
+pub struct DbTx {
+  // private fields
+}
+pub fn DbTx::dialect(Self) -> @dialect.DialectKind
+pub async fn DbTx::exec_mutate(Self, String, Array[@unmbt/ciallo-orm/schema.SqlValue], SourceLoc) -> @driver.ExecResult raise @codec.DataError
+pub async fn DbTx::exec_query_rows(Self, String, Array[@unmbt/ciallo-orm/schema.SqlValue], SourceLoc) -> Array[@unmbt/ciallo-orm/schema.SqlRow] raise @codec.DataError
+#callsite(autofill(loc))
+pub async fn[T : @unmbt/ciallo-orm/schema.FromRow] DbTx::find_all(Self, @ast.SelectAst, ctx? : QueryContext, loc~ : SourceLoc) -> Array[T] raise @codec.DataError
+pub fn DbTx::hooks(Self) -> Array[&QueryHook]
+#callsite(autofill(loc))
+pub async fn[R] DbTx::transaction(Self, loc~ : SourceLoc, async (Self) -> R) -> R
+pub fn DbTx::with_context(Self, QueryContext) -> Self
+pub impl @driver.SqlExecutor for DbTx
+
+#derive(Eq, @debug.Debug)
+pub(all) enum DeleteRewrite {
+  KeepDelete(@ast.DeleteAst)
+  RewriteToSoftUpdate(@ast.UpdateAst)
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct QueryContext {
+  traceparent : String?
+  tenant_id : String?
+  actor_id : String?
+  route : String?
+  now_micros : Int64?
+  skip_soft_delete : Bool
+  skip_tenant : Bool
+}
+pub fn QueryContext::QueryContext(traceparent? : String, tenant_id? : String, actor_id? : String, route? : String, now_micros? : Int64, skip_soft_delete? : Bool, skip_tenant? : Bool) -> Self
+
+pub struct SelectBuilder1[A] {
+  // private fields
+}
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, A : @unmbt/ciallo-orm/schema.FromSqlValue] SelectBuilder1::all(Self[A], E, loc~ : SourceLoc) -> Array[A] raise @codec.DataError
+pub fn[A, T] SelectBuilder1::from(Self[A], @ast.TableRef[T]) -> Self[A]
+pub fn[A] SelectBuilder1::limit(Self[A], Int32) -> Self[A]
+pub fn[A] SelectBuilder1::offset(Self[A], Int32) -> Self[A]
+pub fn[A] SelectBuilder1::order_by(Self[A], @ast.OrderBy) -> Self[A]
+pub fn[A] SelectBuilder1::where_(Self[A], @ast.Expr) -> Self[A]
+
+pub struct SelectBuilder2[A, B] {
+  // private fields
+}
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, A : @unmbt/ciallo-orm/schema.FromSqlValue, B : @unmbt/ciallo-orm/schema.FromSqlValue] SelectBuilder2::all(Self[A, B], E, loc~ : SourceLoc) -> Array[(A, B)] raise @codec.DataError
+pub fn[A, B, T] SelectBuilder2::from(Self[A, B], @ast.TableRef[T]) -> Self[A, B]
+pub fn[A, B] SelectBuilder2::group_by(Self[A, B], @ast.Expr) -> Self[A, B]
+pub fn[A, B, T] SelectBuilder2::join(Self[A, B], kind? : @ast.JoinKind, @ast.TableRef[T], on~ : @ast.Expr) -> Self[A, B]
+pub fn[A, B] SelectBuilder2::limit(Self[A, B], Int32) -> Self[A, B]
+pub fn[A, B] SelectBuilder2::order_by(Self[A, B], @ast.OrderBy) -> Self[A, B]
+pub fn[A, B] SelectBuilder2::where_(Self[A, B], @ast.Expr) -> Self[A, B]
+
+pub struct SelectBuilder3[A, B, C] {
+  // private fields
+}
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, A : @unmbt/ciallo-orm/schema.FromSqlValue, B : @unmbt/ciallo-orm/schema.FromSqlValue, C : @unmbt/ciallo-orm/schema.FromSqlValue] SelectBuilder3::all(Self[A, B, C], E, loc~ : SourceLoc) -> Array[(A, B, C)] raise @codec.DataError
+pub fn[A, B, C, T] SelectBuilder3::from(Self[A, B, C], @ast.TableRef[T]) -> Self[A, B, C]
+pub fn[A, B, C, T] SelectBuilder3::join(Self[A, B, C], kind? : @ast.JoinKind, @ast.TableRef[T], on~ : @ast.Expr) -> Self[A, B, C]
+pub fn[A, B, C] SelectBuilder3::limit(Self[A, B, C], Int32) -> Self[A, B, C]
+pub fn[A, B, C] SelectBuilder3::where_(Self[A, B, C], @ast.Expr) -> Self[A, B, C]
+
+pub struct SoftDeleteHook {
+}
+pub fn SoftDeleteHook::SoftDeleteHook() -> Self
+pub impl QueryHook for SoftDeleteHook
+
+pub struct TenantHook {
+}
+pub fn TenantHook::TenantHook() -> Self
+pub impl QueryHook for TenantHook
+
+// Type aliases
+
+// Traits
+pub(open) trait QueryHook {
+  fn on_before_select(Self, @ast.SelectAst, QueryContext) -> @ast.SelectAst raise @codec.DataError = _
+  fn on_before_insert(Self, @ast.InsertAst, QueryContext) -> @ast.InsertAst raise @codec.DataError = _
+  fn on_before_update(Self, @ast.UpdateAst, QueryContext) -> @ast.UpdateAst raise @codec.DataError = _
+  fn on_before_delete(Self, @ast.DeleteAst, QueryContext) -> DeleteRewrite raise @codec.DataError = _
+}

@@ -138,6 +138,54 @@ fn normalize_response_body_track2(
 }
 
 ///|
+fn apply_sparse_field_mask(
+  resp : @http.Response,
+  response_schema : @schema.SchemaNode?,
+  fields_param : String?,
+) -> @http.Response {
+  match (response_schema, fields_param) {
+    (Some(schema), Some(raw_fields)) => {
+      let mask = @schema.FieldMask::parse(raw_fields)
+      if mask.is_empty() {
+        return resp
+      }
+      match resp.body {
+        @http.Body::Text(raw) =>
+          match (Some(@json.parse(raw)) catch { _ => None }) {
+            Some(parsed) => {
+              let projected = @schema.project_json(parsed, schema, mask)
+              {
+                ..resp,
+                body: @http.Body::Text(projected.stringify()),
+                normalized: true,
+              }
+            }
+            None => resp
+          }
+        @http.Body::Bytes(b) =>
+          match (Some(@utf8.decode(b)) catch { _ => None }) {
+            Some(raw) =>
+              match (Some(@json.parse(raw)) catch { _ => None }) {
+                Some(parsed) => {
+                  let projected = @schema.project_json(parsed, schema, mask)
+                  {
+                    ..resp,
+                    body: @http.Body::Text(projected.stringify()),
+                    normalized: true,
+                  }
+                }
+                None => resp
+              }
+            None => resp
+          }
+        _ => resp
+      }
+    }
+    _ => resp
+  }
+}
+
+///|
 fn strip_trailing_slashes(path : String) -> String {
   if path.length() <= 1 {
     return path
@@ -194,6 +242,7 @@ pub async fn App::fetch(
   let mut error_mappers = root_error_mappers
   let mut trace_listeners = root_trace_listeners
   let mut route_resp_schema : @schema.SchemaNode? = None
+  let mut route_allow_sparse_fields = false
 
   let mut response : @http.Response = @http.Response::empty(status=500)
   let mut failed_err : Error? = None
@@ -258,6 +307,7 @@ pub async fn App::fetch(
             error_mappers = rm.value.error_mappers
             trace_listeners = rm.value.trace_listeners
             route_resp_schema = rm.value.options.response_schema
+            route_allow_sparse_fields = rm.value.options.allow_sparse_fields
           }
           None => {
             let allowed = router.allowed_methods(req.url.path)
@@ -395,10 +445,17 @@ pub async fn App::fetch(
     None => ()
   }
 
-  // --- Stage 7: MapResponse (metadata merge + Track 2 normalization + HEAD empty body + hooks) ---
+  // --- Stage 7: MapResponse (metadata merge + Track 2 normalization + optional FieldMask + HEAD empty body + hooks) ---
   let s7 = clock.now_micros()
   if failed_err is None {
     response = ctx.apply_response_metadata(response)
+    if route_allow_sparse_fields {
+      response = apply_sparse_field_mask(
+        response,
+        route_resp_schema,
+        ctx.query("fields"),
+      )
+    }
     response = normalize_response_body_track2(response, route_resp_schema)
   }
   try {

@@ -4,14 +4,25 @@ package "unmbt/ciallo-gen"
 import {
   "moonbitlang/core/debug",
   "moonbitlang/core/json",
+  "unmbt/ciallo-migrate",
 }
 
 // Values
+pub fn extract_orm_snapshot(String, file_name? : String) -> @ciallo-migrate.SchemaSnapshot raise GenError
+
 pub fn generate_eden_mbt(@json.Json) -> String raise GenError
 
 pub fn generate_eden_ts(@json.Json) -> String raise GenError
 
+pub fn generate_orm_source(String, file_name? : String) -> String raise GenError
+
 pub fn generate_schema_source(String, file_name? : String) -> String raise GenError
+
+pub fn generate_wire_source(Array[(String, String)], wire_fn_name? : String) -> String raise GenError
+
+pub fn introspect_snapshot_to_mbt(@ciallo-migrate.SchemaSnapshot) -> String
+
+pub fn parse_wire_providers(Array[(String, String)]) -> Array[ProviderSpec] raise GenError
 
 // Errors
 #non_exhaustive
@@ -24,6 +35,15 @@ pub(all) suberror GenError {
 }
 
 // Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct ProviderSpec {
+  file : String
+  line : Int32
+  fn_name : String
+  is_async : Bool
+  params : Array[(String, String)]
+  return_type : String
+}
 
 // Type aliases
 

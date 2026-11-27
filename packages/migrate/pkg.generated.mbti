@@ -1,0 +1,100 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-migrate"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+}
+
+// Values
+pub async fn apply_migrations(&@driver.SqlDriver, Array[MigrationFile]) -> Array[MigrationRecord]
+
+pub fn diff_schemas(SchemaSnapshot, SchemaSnapshot, dialect? : @dialect.DialectKind) -> SchemaDiffResult
+
+pub async fn migration_status(&@driver.SqlDriver, Array[MigrationFile]) -> Array[MigrationStatusEntry]
+
+pub async fn run_seeds(&@driver.SqlDriver, Array[SeedFile]) -> Array[String]
+
+pub fn sha256_bytes_hex(Bytes) -> String
+
+pub fn sha256_str_hex(StringView) -> String
+
+pub async fn verify_migrations(&@driver.SqlDriver, Array[MigrationFile]) -> Unit
+
+// Errors
+#derive(Eq, @debug.Debug)
+pub(all) suberror MigrateError {
+  ChecksumDrift(version~ : String, expected~ : String, actual~ : String)
+  ApplyFailed(version~ : String, message~ : String)
+  RollbackFailed(version~ : String, message~ : String)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct ColumnDef {
+  name : String
+  sql_type : String
+  nullable : Bool
+  primary_key : Bool
+  auto_increment : Bool
+  unique : Bool
+  default_expr : String?
+}
+pub fn ColumnDef::ColumnDef(name~ : String, sql_type~ : String, nullable? : Bool, primary_key? : Bool, auto_increment? : Bool, unique? : Bool, default_expr? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct MigrationFile {
+  version : String
+  name : String
+  up_sql : String
+  down_sql : String?
+}
+pub fn MigrationFile::checksum(Self) -> String
+
+#derive(Eq, @debug.Debug)
+pub(all) struct MigrationRecord {
+  version : String
+  name : String
+  checksum_sha256 : String
+  applied_at_ms : Int64
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct MigrationStatusEntry {
+  version : String
+  name : String
+  applied : Bool
+  checksum_matches : Bool
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SchemaDiffResult {
+  up_sql : String
+  down_sql : String
+  has_changes : Bool
+}
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct SchemaSnapshot {
+  tables : Array[TableDef]
+}
+pub fn SchemaSnapshot::empty() -> Self
+pub fn SchemaSnapshot::to_json(Self) -> @json.Json
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SeedFile {
+  name : String
+  sql : String
+}
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct TableDef {
+  name : String
+  columns : Array[ColumnDef]
+}
+
+// Type aliases
+
+// Traits

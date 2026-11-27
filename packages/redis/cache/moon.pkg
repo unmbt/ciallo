@@ -1,0 +1,14 @@
+import {
+  "moonbitlang/core/json",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-redis/client",
+}
+
+import {
+  "moonbitlang/core/async",
+  "moonbitlang/core/encoding/utf8",
+  "unmbt/ciallo-redis/resp",
+  "unmbt/ciallo-redis/cache",
+} for "test"
+
+supported_targets = "-all+native+js+wasm"

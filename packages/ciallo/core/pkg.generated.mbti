@@ -211,10 +211,11 @@ pub(all) struct RouteOptions {
   response_kind : @openapi.ResponseKind?
   error_responses : Array[@openapi.ResponseSpec]
   bearer_auth : Bool
+  allow_sparse_fields : Bool
   before_handle : Array[async (Context) -> @http.Response?]
   after_handle : Array[async (Context, @http.Response) -> @http.Response]
 }
-pub fn RouteOptions::RouteOptions(operation_id? : String, status? : Int32, summary? : String, description? : String, tags? : Array[String], deprecated? : Bool, max_body_bytes? : Int64, sse_heartbeat_ms? : Int32, params_schema? : @schema.SchemaNode, query_schema? : @schema.SchemaNode, body_schema? : @schema.SchemaNode, response_schema? : @schema.SchemaNode, response_kind? : @openapi.ResponseKind, error_responses? : Array[@openapi.ResponseSpec], bearer_auth? : Bool, before_handle? : Array[async (Context) -> @http.Response?], after_handle? : Array[async (Context, @http.Response) -> @http.Response]) -> Self
+pub fn RouteOptions::RouteOptions(operation_id? : String, status? : Int32, summary? : String, description? : String, tags? : Array[String], deprecated? : Bool, max_body_bytes? : Int64, sse_heartbeat_ms? : Int32, params_schema? : @schema.SchemaNode, query_schema? : @schema.SchemaNode, body_schema? : @schema.SchemaNode, response_schema? : @schema.SchemaNode, response_kind? : @openapi.ResponseKind, error_responses? : Array[@openapi.ResponseSpec], bearer_auth? : Bool, allow_sparse_fields? : Bool, before_handle? : Array[async (Context) -> @http.Response?], after_handle? : Array[async (Context, @http.Response) -> @http.Response]) -> Self
 pub fn[P : @schema.Schema] RouteOptions::with_params(Self, P?) -> Self
 pub fn[Q : @schema.Schema] RouteOptions::with_query(Self, Q?) -> Self
 

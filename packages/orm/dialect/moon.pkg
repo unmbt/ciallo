@@ -1,0 +1,10 @@
+import {
+  "unmbt/ciallo-orm/schema",
+  "unmbt/ciallo-orm/ast",
+}
+
+import {
+  "unmbt/ciallo-orm/dialect",
+} for "test"
+
+supported_targets = "-all+native+js+wasm+wasm-gc"

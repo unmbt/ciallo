@@ -10,8 +10,13 @@ license = "MIT"
 
 keywords = [ "codegen", "openapi", "rpc", "ciallo" ]
 
-description = "Compile-time code generator for unmbt/ciallo (#ciallo.schema and OpenAPI-driven Eden MoonBit/TS SDK)"
+description = "Compile-time code generator for unmbt/ciallo (#ciallo.schema, OpenAPI Eden SDK, #orm.*, wire DI, and migrate CLI)"
 
 preferred_target = "wasm"
 
 supported_targets = "-all+wasm+native"
+
+import {
+  "unmbt/ciallo-orm@0.1.0",
+  "unmbt/ciallo-migrate@0.1.0",
+}

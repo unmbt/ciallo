@@ -1,0 +1,9 @@
+import {
+  "unmbt/ciallo-orm/schema",
+  "unmbt/ciallo-orm/ast",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+  "unmbt/ciallo-orm/query",
+}
+
+supported_targets = "-all+native+js+wasm"

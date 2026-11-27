@@ -1,0 +1,49 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-redis"
+
+import {
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-redis/cache",
+  "unmbt/ciallo-redis/client",
+  "unmbt/ciallo-redis/resp",
+}
+
+// Values
+pub fn cmd_del(StringView) -> @client.TypedCmd[Int64]
+
+pub fn cmd_get(StringView) -> @client.TypedCmd[String?]
+
+pub fn cmd_incr(StringView) -> @client.TypedCmd[Int64]
+
+pub fn cmd_set(StringView, StringView, ex? : Int32, nx? : Bool) -> @client.TypedCmd[Bool]
+
+pub fn decode_resp(BytesView) -> (@resp.RespValue, Int32)? raise @codec.DataError
+
+pub fn encode_command(Array[Bytes]) -> Bytes
+
+pub fn encode_value(@resp.RespValue) -> Bytes
+
+pub fn sha1_str_hex(StringView) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @client {type LuaScript}
+
+pub using @client {type RedisClient}
+
+pub using @client {type RedisConfig}
+
+pub using @cache {type RedisKey}
+
+pub using @resp {type RespDecoder}
+
+pub using @resp {type RespValue}
+
+pub using @client {type TypedCmd}
+
+pub using @client {trait RedisTransport}
+
+// Traits

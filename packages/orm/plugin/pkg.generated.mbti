@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm/plugin"
+
+import {
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-orm/query",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn bundle(@query.Db, name? : String, seed? : String, on_close? : async () -> Unit) -> &@core.CapabilityBundle
+
+pub async fn data_error_mapper(@core.Context, Error) -> @http.Response?
+
+pub let db_key : @runtime.ContextKey[@query.Db]
+
+pub fn map_data_error(@codec.DataError, trace_id? : String, instance? : String) -> @http.Response
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

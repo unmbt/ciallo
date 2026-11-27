@@ -11,6 +11,14 @@
       "unmbt/ciallo-js",
       "unmbt/ciallo-gen",
       "unmbt/ciallo-testing"
+    ],
+    [
+      "unmbt/ciallo-data",
+      "unmbt/ciallo-orm",
+      "unmbt/ciallo-migrate",
+      "unmbt/ciallo-driver-d1",
+      "unmbt/ciallo-redis",
+      "unmbt/ciallo-redis-plugin"
     ]
   ],
   "privatePackages": {

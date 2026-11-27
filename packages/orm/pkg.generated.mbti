@@ -1,0 +1,149 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm"
+
+import {
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-orm/ast",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+  "unmbt/ciallo-orm/query",
+  "unmbt/ciallo-orm/schema",
+}
+
+// Values
+pub fn and_all(Array[@ast.Expr?]) -> @ast.Expr?
+
+pub fn[Table] avg_f64(@ast.Col[Table, Int64]) -> @ast.Projection[Double?]
+
+pub fn[Table, Val] col_proj(@ast.Col[Table, Val], alias_? : String) -> @ast.Projection[Val]
+
+pub fn compile_delete(@dialect.DialectKind, @ast.DeleteAst) -> @dialect.CompiledSql
+
+pub fn compile_insert(@dialect.DialectKind, @ast.InsertAst) -> @dialect.CompiledSql
+
+pub fn compile_select(@dialect.DialectKind, @ast.SelectAst) -> @dialect.CompiledSql
+
+pub fn compile_update(@dialect.DialectKind, @ast.UpdateAst) -> @dialect.CompiledSql
+
+pub fn[Table, Val] count(@ast.Col[Table, Val]) -> @ast.Projection[Int64]
+
+pub fn count_all() -> @ast.Projection[Int64]
+
+pub fn expand_named_sql(@dialect.DialectKind, String, Array[(String, @schema.SqlValue)]) -> @dialect.CompiledSql raise @codec.DataError
+
+pub fn or_all(Array[@ast.Expr?]) -> @ast.Expr?
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, C, P : @schema.FromRow, K : Eq + Hash + @schema.ToSqlValue] preload_belongs_to(E, Array[C], child_fk~ : (C) -> K, parent_table~ : String, pk_col~ : String, parent_key~ : (P) -> K, loc~ : SourceLoc) -> Array[(C, P?)] raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, P, C : @schema.FromRow, K : Eq + Hash + @schema.ToSqlValue] preload_has_many(E, Array[P], parent_key~ : (P) -> K, child_table~ : String, fk_col~ : String, child_fk~ : (C) -> K, loc~ : SourceLoc) -> Array[(P, Array[C])] raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor] raw_exec(E, String, params? : Array[(String, @schema.SqlValue)], loc~ : SourceLoc) -> @driver.ExecResult raise @codec.DataError
+
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor, T : @schema.FromRow] raw_query(E, String, params? : Array[(String, @schema.SqlValue)], loc~ : SourceLoc) -> Array[T] raise @codec.DataError
+
+pub fn[A] select1(@ast.Projection[A]) -> @query.SelectBuilder1[A]
+
+pub fn[A, B] select2(@ast.Projection[A], @ast.Projection[B]) -> @query.SelectBuilder2[A, B]
+
+pub fn[A, B, C] select3(@ast.Projection[A], @ast.Projection[B], @ast.Projection[C]) -> @query.SelectBuilder3[A, B, C]
+
+pub fn[Table] sum_i64(@ast.Col[Table, Int64]) -> @ast.Projection[Int64?]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @ast {type AggFunc}
+
+pub using @query {type AuditHook}
+
+pub using @ast {type BinaryOp}
+
+pub using @ast {type Col}
+
+pub using @dialect {type CompiledSql}
+
+pub using @ast {type ConflictAction}
+
+pub using @query {type Db}
+
+pub using @query {type DbTx}
+
+pub using @ast {type DeleteAst}
+
+pub using @query {type DeleteRewrite}
+
+pub using @dialect {type DialectKind}
+
+pub using @driver {type ExecResult}
+
+pub using @ast {type Expr}
+
+pub using @ast {type InsertAst}
+
+pub using @ast {type JoinClause}
+
+pub using @ast {type JoinKind}
+
+pub using @schema {type JsonCol}
+
+pub using @driver {type MemoryMockDriver}
+
+pub using @ast {type OnConflict}
+
+pub using @ast {type OrderBy}
+
+pub using @ast {type Patch}
+
+pub using @ast {type Projection}
+
+pub using @query {type QueryContext}
+
+pub using @driver {type RecordedQuery}
+
+pub using @ast {type SelectAst}
+
+pub using @query {type SelectBuilder1}
+
+pub using @query {type SelectBuilder2}
+
+pub using @query {type SelectBuilder3}
+
+pub using @ast {type SelectColumn}
+
+pub using @query {type SoftDeleteHook}
+
+pub using @ast {type SortDir}
+
+pub using @schema {type SqlRow}
+
+pub using @schema {type SqlValue}
+
+pub using @ast {type TableRef}
+
+pub using @query {type TenantHook}
+
+pub using @ast {type UnaryOp}
+
+pub using @ast {type UpdateAst}
+
+pub using @schema {trait FromRow}
+
+pub using @schema {trait FromSqlValue}
+
+pub using @query {trait QueryHook}
+
+pub using @driver {trait SqlDriver}
+
+pub using @driver {trait SqlExecutor}
+
+pub using @driver {trait SqlTx}
+
+pub using @schema {trait ToSqlValue}
+
+// Traits

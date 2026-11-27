@@ -1,0 +1,36 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-data"
+
+import {
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-data/pool",
+  "unmbt/ciallo-data/telemetry",
+}
+
+// Values
+pub fn inject_sql_commenter(String, traceparent? : String, source_loc? : String, route? : String) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @codec {type DataError}
+
+pub using @pool {type Lease}
+
+pub using @pool {type Pool}
+
+pub using @pool {type PoolConfig}
+
+pub using @pool {type PoolStats}
+
+pub type QueryObserver = (@telemetry.QuerySpan) -> Unit
+
+pub using @telemetry {type QuerySpan}
+
+pub using @telemetry {type SingleFlight}
+
+pub using @telemetry {type TelemetryConfig}
+
+// Traits

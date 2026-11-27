@@ -1,0 +1,6 @@
+import {
+  "unmbt/ciallo-data/codec",
+  "moonbitlang/core/json",
+}
+
+supported_targets = "-all+native+js+wasm+wasm-gc"

@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-redis-plugin"
+
+import {
+  "unmbt/ciallo-redis/client",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub fn bundle_client(@client.RedisClient, name? : String, seed? : String, namespace_prefix? : String) -> &@core.CapabilityBundle
+
+pub let kv_key : @runtime.ContextKey[&@runtime.KvStore]
+
+pub let redis_key : @runtime.ContextKey[@client.RedisClient]
+
+// Errors
+
+// Types and methods
+pub struct RedisKvStore {
+  client : @client.RedisClient
+  namespace_prefix : String
+}
+pub fn RedisKvStore::RedisKvStore(@client.RedisClient, namespace_prefix? : String) -> Self
+pub impl @runtime.KvStore for RedisKvStore
+
+// Type aliases
+
+// Traits

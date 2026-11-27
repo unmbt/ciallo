@@ -1,0 +1,21 @@
+import {
+  "moonbitlang/core/async/js_async",
+  "moonbitlang/core/encoding/base64",
+  "moonbitlang/core/json",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-orm/schema" @orm_schema,
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-orm/query",
+  "unmbt/ciallo-driver-d1" @d1,
+} for "test"
+
+supported_targets = "-all+js"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async/js_async" ],
+)

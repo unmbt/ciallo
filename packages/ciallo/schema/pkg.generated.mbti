@@ -13,6 +13,8 @@ pub fn coerce_string_map(Map[String, String], SchemaNode) -> @json.Json raise Va
 
 pub fn normalize_json(@json.Json, SchemaNode) -> @json.Json
 
+pub fn project_json(@json.Json, SchemaNode, FieldMask) -> @json.Json
+
 pub fn[T : Schema] schema_of(T?) -> SchemaNode
 
 pub fn[T : Schema] schema_ref_of(T?) -> SchemaNode
@@ -40,6 +42,16 @@ pub(all) struct CursorPage[T] {
   has_more : Bool
 }
 pub impl[T : Schema] Schema for CursorPage[T]
+
+#derive(Eq, @debug.Debug)
+pub struct FieldMask {
+  // private fields
+}
+pub fn FieldMask::contains(Self, StringView) -> Bool
+pub fn FieldMask::empty() -> Self
+pub fn FieldMask::is_empty(Self) -> Bool
+pub fn FieldMask::parse(StringView) -> Self
+pub fn FieldMask::sub_mask(Self, StringView) -> Self?
 
 #derive(Eq, @debug.Debug)
 pub(all) struct NoContent {

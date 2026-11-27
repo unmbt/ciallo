@@ -1,0 +1,73 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-orm/driver"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/schema",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct ExecResult {
+  rows_affected : Int64
+  last_insert_id : Int64?
+}
+pub fn ExecResult::ExecResult(rows_affected? : Int64, last_insert_id? : Int64) -> Self
+
+pub struct MemoryMockDriver {
+  // private fields
+}
+pub fn MemoryMockDriver::MemoryMockDriver(dialect? : @dialect.DialectKind) -> Self
+pub fn MemoryMockDriver::clear_recorded(Self) -> Unit
+pub fn MemoryMockDriver::push_exec_result(Self, ExecResult) -> Unit
+pub fn MemoryMockDriver::push_query_result(Self, Array[@schema.SqlRow]) -> Unit
+pub fn MemoryMockDriver::recorded_queries(Self) -> Array[RecordedQuery]
+pub fn MemoryMockDriver::set_exec_handler(Self, (String, Array[@schema.SqlValue], Map[String, Array[@schema.SqlRow]]) -> ExecResult raise @codec.DataError) -> Unit
+pub fn MemoryMockDriver::set_query_handler(Self, (String, Array[@schema.SqlValue], Map[String, Array[@schema.SqlRow]]) -> Array[@schema.SqlRow] raise @codec.DataError) -> Unit
+pub fn MemoryMockDriver::set_table_rows(Self, String, Array[@schema.SqlRow]) -> Unit
+pub fn MemoryMockDriver::table_rows(Self, String) -> Array[@schema.SqlRow]
+pub fn MemoryMockDriver::tx_events(Self) -> Array[String]
+pub impl SqlDriver for MemoryMockDriver
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RecordedQuery {
+  sql : String
+  params : Array[@schema.SqlValue]
+  is_exec : Bool
+}
+
+// Type aliases
+pub type MockExecHandler = (String, Array[@schema.SqlValue], Map[String, Array[@schema.SqlRow]]) -> ExecResult raise @codec.DataError
+
+pub type MockQueryHandler = (String, Array[@schema.SqlValue], Map[String, Array[@schema.SqlRow]]) -> Array[@schema.SqlRow] raise @codec.DataError
+
+// Traits
+pub(open) trait SqlDriver {
+  fn dialect(Self) -> @dialect.DialectKind
+  async fn query_rows(Self, String, Array[@schema.SqlValue]) -> Array[@schema.SqlRow] raise @codec.DataError
+  async fn execute(Self, String, Array[@schema.SqlValue]) -> ExecResult raise @codec.DataError
+  async fn begin_tx(Self) -> &SqlTx raise @codec.DataError
+}
+
+pub(open) trait SqlExecutor {
+  fn dialect(Self) -> @dialect.DialectKind
+  async fn exec_query_rows(Self, String, Array[@schema.SqlValue], SourceLoc) -> Array[@schema.SqlRow] raise @codec.DataError
+  async fn exec_mutate(Self, String, Array[@schema.SqlValue], SourceLoc) -> ExecResult raise @codec.DataError
+}
+
+pub(open) trait SqlTx {
+  fn dialect(Self) -> @dialect.DialectKind
+  async fn query_rows(Self, String, Array[@schema.SqlValue]) -> Array[@schema.SqlRow] raise @codec.DataError
+  async fn execute(Self, String, Array[@schema.SqlValue]) -> ExecResult raise @codec.DataError
+  async fn savepoint(Self, String) -> Unit raise @codec.DataError
+  async fn release_savepoint(Self, String) -> Unit raise @codec.DataError
+  async fn rollback_to_savepoint(Self, String) -> Unit raise @codec.DataError
+  async fn commit(Self) -> Unit raise @codec.DataError
+  async fn rollback(Self) -> Unit raise @codec.DataError
+}

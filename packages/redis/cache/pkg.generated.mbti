@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-redis/cache"
+
+import {
+  "moonbitlang/core/json",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-redis/client",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct RedisKey[K, V] {
+  prefix : String
+  ttl_secs : Int32?
+  format_key : (K) -> String
+  encode_val : (V) -> String
+  decode_val : (String) -> V raise @codec.DataError
+}
+pub async fn[K, V] RedisKey::delete(Self[K, V], @client.RedisClient, K) -> Unit raise @codec.DataError
+pub fn[K, V] RedisKey::full_key(Self[K, V], K) -> String
+pub async fn[K, V] RedisKey::get(Self[K, V], @client.RedisClient, K) -> V? raise @codec.DataError
+pub async fn[K, V] RedisKey::get_or_load(Self[K, V], @client.RedisClient, K, ttl_secs? : Int32, async () -> V) -> V
+pub fn[K : Show, V : @json.ToJson + @json.FromJson] RedisKey::json(prefix~ : String, ttl_secs? : Int32) -> Self[K, V]
+pub async fn[K, V] RedisKey::set(Self[K, V], @client.RedisClient, K, V, ttl_secs? : Int32) -> Unit raise @codec.DataError
+
+// Type aliases
+
+// Traits

@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-driver-d1"
+
+import {
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+  "unmbt/ciallo-orm/schema",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+#external
+pub type D1Database
+
+pub struct D1Driver {
+  // private fields
+}
+pub fn D1Driver::D1Driver(D1Database) -> Self
+pub impl @driver.SqlDriver for D1Driver
+
+// Type aliases
+
+// Traits

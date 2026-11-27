@@ -1,0 +1,45 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-data/telemetry"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn inject_sql_commenter(String, traceparent? : String, source_loc? : String, route? : String) -> String
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct QuerySpan {
+  system : String
+  operation : String
+  statement : String
+  duration_micros : Int64
+  ok : Bool
+  error_summary : String?
+  source_loc : String
+  traceparent : String?
+}
+
+pub struct SingleFlight[V] {
+  // private fields
+}
+pub fn[V] SingleFlight::SingleFlight() -> Self[V]
+pub async fn[V] SingleFlight::do_once(Self[V], StringView, async () -> V) -> V
+pub fn[V] SingleFlight::in_flight_count(Self[V]) -> Int32
+
+pub(all) struct TelemetryConfig {
+  slow_threshold_micros : Int64
+  sql_commenter : Bool
+  observer : ((QuerySpan) -> Unit)?
+}
+pub fn TelemetryConfig::TelemetryConfig(slow_threshold_micros? : Int64, sql_commenter? : Bool, observer? : (QuerySpan) -> Unit) -> Self
+pub fn TelemetryConfig::emit(Self, QuerySpan) -> Unit
+pub fn TelemetryConfig::is_slow(Self, QuerySpan) -> Bool
+
+// Type aliases
+pub type QueryObserver = (QuerySpan) -> Unit
+
+// Traits

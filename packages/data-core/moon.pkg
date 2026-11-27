@@ -1,0 +1,7 @@
+import {
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-data/telemetry",
+  "unmbt/ciallo-data/pool",
+}
+
+supported_targets = "-all+native+js+wasm"

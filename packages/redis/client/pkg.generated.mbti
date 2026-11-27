@@ -1,0 +1,80 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-redis/client"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-data/telemetry",
+  "unmbt/ciallo-redis/resp",
+}
+
+// Values
+pub fn cmd_del(StringView) -> TypedCmd[Int64]
+
+pub fn cmd_get(StringView) -> TypedCmd[String?]
+
+pub fn cmd_incr(StringView) -> TypedCmd[Int64]
+
+pub fn cmd_set(StringView, StringView, ex? : Int32, nx? : Bool) -> TypedCmd[Bool]
+
+pub fn sha1_str_hex(StringView) -> String
+
+// Errors
+
+// Types and methods
+pub struct LuaScript[R] {
+  source : String
+  sha1 : String
+  decode : (@resp.RespValue) -> R raise @codec.DataError
+}
+pub fn[R] LuaScript::LuaScript(String, (@resp.RespValue) -> R raise @codec.DataError) -> Self[R]
+pub async fn[R] LuaScript::eval(Self[R], RedisClient, keys? : Array[String], args? : Array[String]) -> R raise @codec.DataError
+
+pub struct RedisClient {
+  // private fields
+}
+pub async fn RedisClient::close(Self) -> Unit
+pub async fn RedisClient::connect(config? : RedisConfig, telemetry? : @telemetry.TelemetryConfig) -> Self raise @codec.DataError
+pub async fn RedisClient::del(Self, Array[String]) -> Int64 raise @codec.DataError
+pub async fn RedisClient::expire(Self, StringView, Int32) -> Bool raise @codec.DataError
+pub fn RedisClient::from_transport(&RedisTransport, config? : RedisConfig, telemetry? : @telemetry.TelemetryConfig) -> Self
+pub async fn RedisClient::get(Self, StringView) -> String? raise @codec.DataError
+pub async fn RedisClient::get_bytes(Self, StringView) -> Bytes? raise @codec.DataError
+pub async fn RedisClient::hget(Self, StringView, StringView) -> String? raise @codec.DataError
+pub async fn RedisClient::hset(Self, StringView, Array[(String, String)]) -> Int64 raise @codec.DataError
+pub async fn RedisClient::incr_by(Self, StringView, delta? : Int64) -> Int64 raise @codec.DataError
+pub async fn RedisClient::ping(Self) -> String raise @codec.DataError
+pub async fn[A, B] RedisClient::pipe2(Self, TypedCmd[A], TypedCmd[B], transactional? : Bool) -> (A, B) raise @codec.DataError
+pub async fn[A, B, C] RedisClient::pipe3(Self, TypedCmd[A], TypedCmd[B], TypedCmd[C], transactional? : Bool) -> (A, B, C) raise @codec.DataError
+pub async fn RedisClient::publish(Self, StringView, Bytes) -> Int64 raise @codec.DataError
+pub async fn RedisClient::send_command(Self, Array[Bytes]) -> @resp.RespValue raise @codec.DataError
+pub async fn RedisClient::set(Self, StringView, StringView, ex? : Int32, px? : Int64, nx? : Bool, xx? : Bool, keep_ttl? : Bool, get_prev? : Bool) -> String? raise @codec.DataError
+pub async fn RedisClient::single_flight(Self, StringView, async () -> String) -> String
+pub async fn RedisClient::subscribe(Self, Array[String], async (String, Bytes) -> Unit) -> Unit
+pub async fn RedisClient::zadd(Self, StringView, Array[(Double, String)], nx? : Bool, xx? : Bool, gt? : Bool, lt? : Bool) -> Int64 raise @codec.DataError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RedisConfig {
+  host : String
+  port : Int32
+  password : String?
+  db : Int32
+  protocol_version : Int32
+  auto_pipeline : Bool
+  connect_timeout_ms : Int32
+}
+pub fn RedisConfig::RedisConfig(host? : String, port? : Int32, password? : String, db? : Int32, protocol_version? : Int32, auto_pipeline? : Bool, connect_timeout_ms? : Int32) -> Self
+
+pub struct TypedCmd[R] {
+  args : Array[Bytes]
+  decode : (@resp.RespValue) -> R raise @codec.DataError
+}
+
+// Type aliases
+
+// Traits
+pub(open) trait RedisTransport {
+  async fn send_raw(Self, Bytes) -> Unit raise @codec.DataError
+  async fn recv_resp(Self) -> @resp.RespValue raise @codec.DataError
+  async fn close(Self) -> Unit
+}

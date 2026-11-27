@@ -1,0 +1,7 @@
+import {
+  "unmbt/ciallo-redis/resp",
+  "unmbt/ciallo-redis/client",
+  "unmbt/ciallo-redis/cache",
+}
+
+supported_targets = "-all+native+js+wasm"

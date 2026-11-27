@@ -3,6 +3,8 @@ import {
   "moonbitlang/core/async/fs",
   "moonbitlang/core/env",
   "moonbitlang/core/json",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-migrate" @migrate,
   "unmbt/ciallo-gen" @ciallo_gen,
 }
 

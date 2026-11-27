@@ -1,0 +1,11 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/string",
+  "unmbt/ciallo-data/codec",
+}
+
+import {
+  "unmbt/ciallo-redis/resp",
+} for "test"
+
+supported_targets = "-all+native+js+wasm+wasm-gc"

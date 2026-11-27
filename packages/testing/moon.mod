@@ -19,4 +19,6 @@ supported_targets = "-all+native+js+wasm"
 import {
   "unmbt/webstd@0.1.0",
   "unmbt/ciallo@0.1.0",
+  "unmbt/ciallo-data@0.1.0",
+  "unmbt/ciallo-orm@0.1.0",
 }
