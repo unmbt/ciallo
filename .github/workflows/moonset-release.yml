@@ -40,8 +40,8 @@ jobs:
       - uses: hustcer/setup-moonbit@v1
         if: steps.check-state.outputs.present == 'true'
         with:
-          version: '0.10.22+124d61d05'
-          core-version: '0.10.22+124d61d05'
+          version: '1.0.0-rc1+3c0520448'
+          core-version: '1.0.0-rc1+3c0520448'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: steps.check-state.outputs.present == 'true'
