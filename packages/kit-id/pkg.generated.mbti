@@ -1,0 +1,88 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-id"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub let default_snowflake_epoch_ms : Int64
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror IdError {
+  InvalidFormat(String)
+  InvalidWorkerId(Int32)
+  ClockMovedBackwards(last_ms~ : Int64, now_ms~ : Int64)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct Snowflake(Int64)
+pub fn Snowflake::decompose(Self, epoch_ms? : Int64) -> SnowflakeParts
+pub fn Snowflake::to_int64(Self) -> Int64
+pub fn Snowflake::to_string(Self) -> String
+pub impl Show for Snowflake
+
+pub struct SnowflakeGenerator {
+  worker_id : Int32
+  epoch_ms : Int64
+  now_ms : () -> Int64
+  mut last_ms : Int64
+  mut seq : Int32
+}
+pub fn SnowflakeGenerator::SnowflakeGenerator(worker_id~ : Int32, now_ms~ : () -> Int64, epoch_ms? : Int64) -> Self raise IdError
+pub fn SnowflakeGenerator::next(Self) -> Snowflake raise IdError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SnowflakeParts {
+  timestamp_ms : Int64
+  worker_id : Int32
+  sequence : Int32
+}
+
+#derive(Eq, @debug.Debug)
+pub struct Ulid {
+  bytes : Bytes
+}
+pub fn Ulid::as_bytes(Self) -> Bytes
+pub fn Ulid::parse(StringView) -> Self raise IdError
+pub fn Ulid::timestamp_ms(Self) -> Int64
+pub fn Ulid::to_string(Self) -> String
+pub impl Show for Ulid
+
+pub struct UlidGenerator {
+  now_ms : () -> Int64
+  mut last_ms : Int64
+  last_rand : FixedArray[Byte]
+  mut rng_state : UInt64
+}
+pub fn UlidGenerator::UlidGenerator(now_ms~ : () -> Int64, seed? : UInt64) -> Self
+pub fn UlidGenerator::next(Self) -> Ulid
+
+#derive(Eq, @debug.Debug)
+pub struct Uuid {
+  bytes : Bytes
+}
+pub fn Uuid::as_bytes(Self) -> Bytes
+pub fn Uuid::from_bytes(Bytes) -> Self raise IdError
+pub fn Uuid::parse(StringView) -> Self raise IdError
+pub fn Uuid::timestamp_ms(Self) -> Int64
+pub fn Uuid::to_string(Self) -> String
+pub fn Uuid::variant(Self) -> Int32
+pub fn Uuid::version(Self) -> Int32
+pub impl Show for Uuid
+
+pub struct UuidV7Generator {
+  now_ms : () -> Int64
+  mut last_ms : Int64
+  mut seq : Int32
+  mut rng_state : UInt64
+}
+pub fn UuidV7Generator::UuidV7Generator(now_ms~ : () -> Int64, seed? : UInt64) -> Self
+pub fn UuidV7Generator::next(Self) -> Uuid
+
+// Type aliases
+
+// Traits

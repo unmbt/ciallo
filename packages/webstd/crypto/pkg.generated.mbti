@@ -1,0 +1,45 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/webstd/crypto"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn base64url_decode(StringView) -> Bytes raise CryptoError
+
+pub fn base64url_encode(BytesView) -> String
+
+pub fn blake2b(BytesView, out_len? : Int32, key? : BytesView) -> Bytes raise CryptoError
+
+pub fn bytes_to_hex(BytesView) -> String
+
+pub fn chacha20_xor(key~ : BytesView, nonce~ : BytesView, counter? : UInt32, data~ : BytesView) -> Bytes raise CryptoError
+
+pub fn constant_time_equal(BytesView, BytesView) -> Bool
+
+pub fn hmac_sha256(key~ : BytesView, data~ : BytesView) -> Bytes
+
+pub fn pbkdf2_hmac_sha256(password~ : BytesView, salt~ : BytesView, iterations~ : Int32, dk_len~ : Int32) -> Bytes raise CryptoError
+
+pub fn sha256(BytesView) -> Bytes
+
+pub fn sha256_hex(BytesView) -> String
+
+pub fn xchacha20_xor(key~ : BytesView, nonce~ : BytesView, counter? : UInt32, data~ : BytesView) -> Bytes raise CryptoError
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror CryptoError {
+  InvalidKeyLength(expected~ : Int32, actual~ : Int32)
+  InvalidNonceLength(expected~ : Int32, actual~ : Int32)
+  InvalidOutputLength(Int32)
+  InvalidEncoding(String)
+}
+
+// Types and methods
+
+// Type aliases
+
+// Traits

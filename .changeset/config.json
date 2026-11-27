@@ -19,6 +19,19 @@
       "unmbt/ciallo-driver-d1",
       "unmbt/ciallo-redis",
       "unmbt/ciallo-redis-plugin"
+    ],
+    [
+      "unmbt/ciallo-id",
+      "unmbt/ciallo-config",
+      "unmbt/ciallo-problem",
+      "unmbt/ciallo-log",
+      "unmbt/ciallo-security",
+      "unmbt/ciallo-resilience",
+      "unmbt/ciallo-actuator",
+      "unmbt/ciallo-otel",
+      "unmbt/ciallo-queue",
+      "unmbt/ciallo-mcp",
+      "unmbt/ciallo-wasi"
     ]
   ],
   "privatePackages": {

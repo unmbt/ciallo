@@ -1,0 +1,20 @@
+import {
+  "moonbitlang/core/json",
+  "unmbt/webstd/http",
+  "unmbt/webstd/url",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo/schema",
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-mcp" @ciallo_mcp,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

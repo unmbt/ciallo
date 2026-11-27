@@ -1,0 +1,3 @@
+import {
+  "unmbt/ciallo-id" @ciallo_id,
+} for "test"

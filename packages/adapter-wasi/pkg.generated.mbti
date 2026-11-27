@@ -1,0 +1,91 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-wasi"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub async fn handle_incoming_request(@core.App, WasiIncomingRequest, env? : @runtime.Env) -> WasiOutgoingResponse raise WasiErrorCode
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror WasiErrorCode {
+  HttpRequestUriInvalid
+  HttpProtocolError
+  InternalError(String)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub struct WasiFields {
+  entries : Array[(String, Bytes)]
+}
+pub fn WasiFields::WasiFields(entries? : Array[(String, Bytes)]) -> Self
+pub fn WasiFields::append(Self, StringView, Bytes) -> Unit
+pub fn WasiFields::append_str(Self, StringView, StringView) -> Unit
+pub fn WasiFields::entries(Self) -> Array[(String, Bytes)]
+pub fn WasiFields::get_all(Self, StringView) -> Array[Bytes]
+
+pub struct WasiIncomingHandler {
+  app : @core.App
+  env : @runtime.Env
+}
+pub fn WasiIncomingHandler::WasiIncomingHandler(@core.App, env? : @runtime.Env) -> Self
+pub async fn WasiIncomingHandler::handle(Self, WasiIncomingRequest, WasiResponseOutparam) -> Unit
+
+pub struct WasiIncomingRequest {
+  meth : WasiMethod
+  scheme : WasiScheme
+  authority : String
+  path_with_query : String
+  headers : WasiFields
+  body_chunks : Array[Bytes]
+}
+pub fn WasiIncomingRequest::WasiIncomingRequest(meth? : WasiMethod, scheme? : WasiScheme, authority? : String, path_with_query? : String, headers? : WasiFields, body_chunks? : Array[Bytes]) -> Self
+
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) enum WasiMethod {
+  Get
+  Head
+  Post
+  Put
+  Delete
+  Connect
+  Options
+  Trace
+  Patch
+  Other(String)
+}
+
+#derive(Eq, @debug.Debug)
+pub struct WasiOutgoingResponse {
+  status_code : Int32
+  headers : WasiFields
+  body_chunks : Array[Bytes]
+}
+pub fn WasiOutgoingResponse::body_bytes(Self) -> Bytes
+pub fn WasiOutgoingResponse::body_text(Self) -> String
+
+pub struct WasiResponseOutparam {
+  mut result : Result[WasiOutgoingResponse, WasiErrorCode]?
+}
+pub fn WasiResponseOutparam::WasiResponseOutparam() -> Self
+pub fn WasiResponseOutparam::set(Self, Result[WasiOutgoingResponse, WasiErrorCode]) -> Unit
+pub fn WasiResponseOutparam::take(Self) -> Result[WasiOutgoingResponse, WasiErrorCode]?
+
+#derive(Eq, @debug.Debug)
+pub(all) enum WasiScheme {
+  Http
+  Https
+  Other(String)
+}
+pub fn WasiScheme::as_str(Self) -> String
+
+// Type aliases
+
+// Traits

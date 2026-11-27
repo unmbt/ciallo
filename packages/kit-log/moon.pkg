@@ -1,0 +1,17 @@
+import {
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo-config" @ciallo_config,
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/webstd/http",
+  "unmbt/ciallo-log" @ciallo_log,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

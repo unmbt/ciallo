@@ -1,0 +1,97 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-log"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo-config",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub fn format_log_record(LogRecord, LogFormat) -> String
+
+pub let logger_key : @runtime.ContextKey[Logger]
+
+pub let request_id_key : @runtime.ContextKey[String]
+
+pub fn[T] secret_field(String, @ciallo-config.Secret[T]) -> (String, @json.Json)
+
+// Errors
+
+// Types and methods
+pub struct ConsoleSink {
+}
+pub fn ConsoleSink::ConsoleSink() -> Self
+pub impl LogSink for ConsoleSink
+
+pub struct LogBundle {
+  base_logger : Logger
+  log_requests : Bool
+}
+pub fn LogBundle::LogBundle(Logger, log_requests? : Bool) -> Self
+pub impl @core.CapabilityBundle for LogBundle
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LogFormat {
+  Jsonl
+  Pretty
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) enum LogLevel {
+  Trace
+  Debug
+  Info
+  Warn
+  Error
+}
+pub fn LogLevel::as_str(Self) -> String
+pub fn LogLevel::rank(Self) -> Int32
+
+#derive(Eq, @debug.Debug)
+pub(all) struct LogRecord {
+  timestamp_ms : Int64
+  level : LogLevel
+  message : String
+  request_id : String?
+  trace_id : String?
+  span_id : String?
+  fields : Map[String, @json.Json]
+}
+
+pub struct Logger {
+  min_level : LogLevel
+  format : LogFormat
+  sink : &LogSink
+  clock : &@runtime.Clock
+  request_id : String?
+  trace_id : String?
+  span_id : String?
+  base_fields : Map[String, @json.Json]
+  extra_sensitive_keys : Array[String]
+}
+pub fn Logger::Logger(min_level? : LogLevel, format? : LogFormat, sink? : &LogSink, clock? : &@runtime.Clock, extra_sensitive_keys? : Array[String]) -> Self
+pub fn Logger::debug(Self, String, fields? : Array[(String, @json.Json)]) -> Unit
+pub fn Logger::error(Self, String, fields? : Array[(String, @json.Json)]) -> Unit
+pub fn Logger::info(Self, String, fields? : Array[(String, @json.Json)]) -> Unit
+pub fn Logger::log(Self, LogLevel, String, fields? : Array[(String, @json.Json)]) -> Unit
+pub fn Logger::trace(Self, String, fields? : Array[(String, @json.Json)]) -> Unit
+pub fn Logger::warn(Self, String, fields? : Array[(String, @json.Json)]) -> Unit
+pub fn Logger::with_fields(Self, Array[(String, @json.Json)]) -> Self
+pub fn Logger::with_trace(Self, request_id? : String, trace_id? : String, span_id? : String) -> Self
+
+pub struct MemorySink {
+  lines : Array[String]
+}
+pub fn MemorySink::MemorySink() -> Self
+pub fn MemorySink::lines(Self) -> Array[String]
+pub impl LogSink for MemorySink
+
+// Type aliases
+
+// Traits
+pub(open) trait LogSink {
+  fn write(Self, String) -> Unit
+}

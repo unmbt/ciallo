@@ -35,6 +35,30 @@ pub fn Url::parse(StringView) -> Self raise UrlError
 pub fn Url::query_first(Self, StringView) -> String? raise UrlError
 pub fn Url::query_params(Self) -> Map[String, Array[String]] raise UrlError
 
+#derive(Eq, @debug.Debug)
+pub struct UrlPattern {
+  protocol : String?
+  hostname : String?
+  pathname : String?
+}
+pub fn UrlPattern::UrlPattern(protocol? : String, hostname? : String, pathname? : String) -> Self
+pub fn UrlPattern::exec(Self, StringView) -> UrlPatternResult?
+pub fn UrlPattern::exec_url(Self, Url) -> UrlPatternResult?
+pub fn UrlPattern::test_url(Self, StringView) -> Bool
+
+#derive(Eq, @debug.Debug)
+pub(all) struct UrlPatternGroup {
+  input : String
+  groups : Map[String, String]
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct UrlPatternResult {
+  protocol : UrlPatternGroup
+  hostname : UrlPatternGroup
+  pathname : UrlPatternGroup
+}
+
 // Type aliases
 
 // Traits

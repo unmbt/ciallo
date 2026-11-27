@@ -1,0 +1,11 @@
+import {
+  "unmbt/webstd/http",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/schema",
+}
+
+import {
+  "unmbt/ciallo-problem" @ciallo_problem,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"

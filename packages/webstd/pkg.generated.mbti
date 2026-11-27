@@ -2,24 +2,47 @@
 package "unmbt/webstd"
 
 import {
+  "unmbt/webstd/crypto",
   "unmbt/webstd/http",
   "unmbt/webstd/url",
 }
 
 // Values
+pub fn base64url_decode(StringView) -> Bytes raise @crypto.CryptoError
+
+pub fn base64url_encode(BytesView) -> String
+
+pub fn blake2b(BytesView, out_len? : Int32, key? : BytesView) -> Bytes raise @crypto.CryptoError
+
+pub fn bytes_to_hex(BytesView) -> String
+
+pub fn chacha20_xor(key~ : BytesView, nonce~ : BytesView, counter? : UInt32, data~ : BytesView) -> Bytes raise @crypto.CryptoError
+
+pub fn constant_time_equal(BytesView, BytesView) -> Bool
+
 pub fn decode_query_component(StringView) -> String raise @url.UrlError
 
 pub fn encode_query_component(StringView) -> String
 
 pub fn format_set_cookie(StringView, StringView, options? : @http.CookieOptions) -> String
 
+pub fn hmac_sha256(key~ : BytesView, data~ : BytesView) -> Bytes
+
 pub fn parse_cookies(StringView) -> Map[String, String]
+
+pub fn pbkdf2_hmac_sha256(password~ : BytesView, salt~ : BytesView, iterations~ : Int32, dk_len~ : Int32) -> Bytes raise @crypto.CryptoError
 
 pub fn percent_decode(StringView) -> String raise @url.UrlError
 
 pub fn percent_encode(StringView) -> String
 
+pub fn sha256(BytesView) -> Bytes
+
+pub fn sha256_hex(BytesView) -> String
+
 pub fn status_reason(Int32) -> String
+
+pub fn xchacha20_xor(key~ : BytesView, nonce~ : BytesView, counter? : UInt32, data~ : BytesView) -> Bytes raise @crypto.CryptoError
 
 // Errors
 
@@ -33,6 +56,12 @@ pub using @http {type ByteStream}
 pub using @http {type Cookie}
 
 pub using @http {type CookieOptions}
+
+pub using @crypto {type CryptoError}
+
+pub using @http {type FormData}
+
+pub using @http {type FormEntry}
 
 pub using @http {type Headers}
 
@@ -52,10 +81,24 @@ pub using @http {type SseEvent}
 
 pub using @http {type StreamError}
 
+pub using @http {type TransformStream}
+
 pub using @http {type TypedSseEvent}
 
 pub using @url {type Url}
 
 pub using @url {type UrlError}
+
+pub using @url {type UrlPattern}
+
+pub using @url {type UrlPatternGroup}
+
+pub using @url {type UrlPatternResult}
+
+pub using @http {type WsCloseCode}
+
+pub using @http {type WsError}
+
+pub using @http {type WsMessage}
 
 // Traits

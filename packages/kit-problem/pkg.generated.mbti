@@ -1,0 +1,65 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-problem"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/schema",
+  "unmbt/webstd/http",
+}
+
+// Values
+#callsite(autofill(loc))
+pub fn conflict(String, code? : String, loc~ : SourceLoc) -> ProblemBuilder
+
+#callsite(autofill(loc))
+pub fn gateway_timeout(String, code? : String, loc~ : SourceLoc) -> ProblemBuilder
+
+#callsite(autofill(loc))
+pub fn service_unavailable(String, code? : String, loc~ : SourceLoc) -> ProblemBuilder
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct ErrorFrame {
+  code : String
+  message : String
+  source_loc : String?
+}
+pub fn ErrorFrame::to_json(Self) -> @json.Json
+pub impl @json.ToJson for ErrorFrame
+
+pub struct ProblemBuilder {
+  status : Int32
+  mut type_uri : String
+  mut title : String
+  mut detail : String
+  code : String
+  mut instance : String?
+  mut trace_id : String?
+  source_loc : SourceLoc?
+  issues : Array[@schema.ValidationIssue]
+  extensions : Map[String, @json.Json]
+  chain : Array[ErrorFrame]
+}
+#callsite(autofill(loc))
+pub fn ProblemBuilder::ProblemBuilder(status~ : Int32, code~ : String, detail? : String, title? : String, type_uri? : String, loc~ : SourceLoc) -> Self
+pub fn ProblemBuilder::build(Self, debug? : Bool) -> @core.ProblemDetails
+pub fn ProblemBuilder::causes(Self) -> Array[ErrorFrame]
+pub fn ProblemBuilder::into_http_error(Self) -> @core.HttpError
+pub fn ProblemBuilder::to_response(Self, debug? : Bool) -> @http.Response
+#callsite(autofill(loc))
+pub fn ProblemBuilder::with_cause(Self, code~ : String, message~ : String, loc~ : SourceLoc) -> Self
+pub fn ProblemBuilder::with_detail(Self, String) -> Self
+pub fn ProblemBuilder::with_extension(Self, String, @json.Json) -> Self
+pub fn ProblemBuilder::with_instance(Self, String) -> Self
+pub fn ProblemBuilder::with_issue(Self, @schema.ValidationIssue) -> Self
+pub fn ProblemBuilder::with_title(Self, String) -> Self
+pub fn ProblemBuilder::with_trace_id(Self, String) -> Self
+pub fn ProblemBuilder::with_type(Self, String) -> Self
+
+// Type aliases
+
+// Traits

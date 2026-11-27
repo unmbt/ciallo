@@ -1,0 +1,174 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-queue"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+  "unmbt/ciallo-orm/query",
+  "unmbt/ciallo-redis/client",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub async fn dispatch_cf_cron(Scheduler, CfCronEvent) -> Array[String]
+
+pub async fn dispatch_cf_queue_batch(CfQueueBatch, async (CfQueueMessage) -> Unit) -> CfBatchOutcome
+
+pub fn outbox_table_ddl(@dialect.DialectKind) -> String
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror QueueError {
+  InvalidCron(String)
+  BackendFailure(String)
+  JobNotFound(String)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct CfBatchOutcome {
+  acked : Array[String]
+  retried : Array[String]
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CfCronEvent {
+  cron : String
+  scheduled_time_ms : Int64
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CfQueueBatch {
+  queue : String
+  messages : Array[CfQueueMessage]
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CfQueueMessage {
+  id : String
+  timestamp_ms : Int64
+  body : @json.Json
+  attempts : Int32
+}
+
+#derive(Eq, @debug.Debug)
+pub struct CronExpr {
+  raw : String
+  minute : String
+  hour : String
+  day_of_month : String
+  month : String
+  day_of_week : String
+}
+pub fn CronExpr::matches(Self, CronTime) -> Bool
+pub fn CronExpr::parse(StringView) -> Self raise QueueError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CronTime {
+  minute : Int32
+  hour : Int32
+  day_of_month : Int32
+  month : Int32
+  day_of_week : Int32
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct EnqueueOptions {
+  delay_ms : Int64
+  max_attempts : Int32
+  idempotency_key : String?
+}
+pub fn EnqueueOptions::EnqueueOptions(delay_ms? : Int64, max_attempts? : Int32, idempotency_key? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Job {
+  id : String
+  queue : String
+  payload : @json.Json
+  attempts : Int32
+  max_attempts : Int32
+  available_at_ms : Int64
+  idempotency_key : String?
+}
+pub fn Job::from_json_value(@json.Json) -> Self raise QueueError
+pub fn Job::to_json(Self) -> @json.Json
+
+#derive(Eq, @debug.Debug)
+pub(all) enum JobStatus {
+  Pending
+  Processing
+  Completed
+  DeadLettered
+}
+
+pub struct MemoryJobQueue {
+  clock : &@runtime.Clock
+  mut next_id : Int64
+  pending : Array[Job]
+  in_flight : Map[String, Job]
+  dlq : Array[Job]
+  seen_keys : Map[String, String]
+}
+pub fn MemoryJobQueue::MemoryJobQueue(clock? : &@runtime.Clock) -> Self
+pub async fn MemoryJobQueue::ack(Self, job_id~ : String) -> Unit raise QueueError
+pub fn MemoryJobQueue::dead_letters(Self) -> Array[Job]
+pub async fn MemoryJobQueue::enqueue(Self, queue~ : String, payload~ : @json.Json, options? : EnqueueOptions) -> String raise QueueError
+pub async fn MemoryJobQueue::nack(Self, job_id~ : String, delay_ms? : Int64) -> Unit raise QueueError
+pub fn MemoryJobQueue::pending_count(Self) -> Int32
+pub async fn MemoryJobQueue::poll(Self, queue~ : String) -> Job? raise QueueError
+pub impl JobQueue for MemoryJobQueue
+
+pub struct OutboxQueue {
+  clock : &@runtime.Clock
+  mut next_id : Int64
+}
+pub fn OutboxQueue::OutboxQueue(clock? : &@runtime.Clock) -> Self
+#callsite(autofill(loc))
+pub async fn[E : @driver.SqlExecutor] OutboxQueue::enqueue_in_tx(Self, E, queue~ : String, payload~ : @json.Json, loc~ : SourceLoc) -> String raise QueueError
+#callsite(autofill(loc))
+pub async fn OutboxQueue::poll_and_dispatch(Self, @query.Db, async (OutboxRecord) -> Unit, limit? : Int32, loc~ : SourceLoc) -> Int32 raise QueueError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct OutboxRecord {
+  id : String
+  queue : String
+  payload : @json.Json
+  status : String
+  created_at_ms : Int64
+}
+
+pub struct RedisJobQueue {
+  client : @client.RedisClient
+  clock : &@runtime.Clock
+  key_prefix : String
+  mut next_id : Int64
+  in_flight : Map[String, Job]
+}
+pub fn RedisJobQueue::RedisJobQueue(client~ : @client.RedisClient, clock? : &@runtime.Clock, key_prefix? : String) -> Self
+pub async fn RedisJobQueue::ack(Self, job_id~ : String) -> Unit raise QueueError
+pub async fn RedisJobQueue::enqueue(Self, queue~ : String, payload~ : @json.Json, options? : EnqueueOptions) -> String raise QueueError
+pub async fn RedisJobQueue::nack(Self, job_id~ : String, delay_ms? : Int64) -> Unit raise QueueError
+pub async fn RedisJobQueue::poll(Self, queue~ : String) -> Job? raise QueueError
+pub impl JobQueue for RedisJobQueue
+
+type ScheduledEntry
+
+pub struct Scheduler {
+  tasks : Array[ScheduledEntry]
+}
+pub fn Scheduler::Scheduler() -> Self
+pub fn Scheduler::schedule(Self, name~ : String, cron~ : StringView, async () -> Unit) -> Self raise QueueError
+pub async fn Scheduler::tick(Self, CronTime) -> Array[String]
+
+// Type aliases
+
+// Traits
+pub(open) trait JobQueue {
+  async fn enqueue(Self, queue~ : String, payload~ : @json.Json, options? : EnqueueOptions) -> String raise QueueError
+  async fn poll(Self, queue~ : String) -> Job? raise QueueError
+  async fn ack(Self, job_id~ : String) -> Unit raise QueueError
+  async fn nack(Self, job_id~ : String, delay_ms? : Int64) -> Unit raise QueueError
+}

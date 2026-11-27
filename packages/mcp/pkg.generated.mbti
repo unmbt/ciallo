@@ -1,0 +1,62 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-mcp"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn export_anthropic_tools(@openapi.OpenApiDocument, filter? : McpFilter) -> @json.Json
+
+pub fn export_mcp_tools(@openapi.OpenApiDocument, filter? : McpFilter) -> Array[McpTool]
+
+pub fn export_openai_tools(@openapi.OpenApiDocument, filter? : McpFilter) -> @json.Json
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct McpFilter {
+  prefix : String?
+  tags : Array[String]
+  exclude_paths : Array[String]
+}
+pub fn McpFilter::McpFilter(prefix? : String, tags? : Array[String], exclude_paths? : Array[String]) -> Self
+
+pub struct McpServer {
+  app : @core.App
+  info : @openapi.OpenApiInfo
+  protocol_version : String
+  tools : Array[McpTool]
+  tool_index : Map[String, McpTool]
+}
+pub fn McpServer::from_app(@core.App, info~ : @openapi.OpenApiInfo, filter? : McpFilter, protocol_version? : String) -> Self raise @core.AppBuildError
+pub async fn McpServer::handle_jsonrpc(Self, @json.Json, env? : @runtime.Env, exec_ctx? : @runtime.ExecutionContext, headers? : @http.Headers) -> @json.Json?
+pub fn McpServer::mount_http(Self, @core.App, path? : String) -> @core.App raise @core.AppBuildError
+pub fn McpServer::tools(Self) -> Array[McpTool]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct McpTool {
+  name : String
+  description : String
+  input_schema : @json.Json
+  meth : @http.Method
+  path : String
+  param_names : Array[String]
+  query_names : Array[String]
+  body_is_wrapped : Bool
+  body_fields : Array[String]
+  bearer_auth : Bool
+}
+pub fn McpTool::to_anthropic_tool_json(Self) -> @json.Json
+pub fn McpTool::to_mcp_json(Self) -> @json.Json
+pub fn McpTool::to_openai_function_json(Self) -> @json.Json
+
+// Type aliases
+
+// Traits

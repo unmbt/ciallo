@@ -2,13 +2,17 @@
 package "unmbt/ciallo-native"
 
 import {
+  "moonbitlang/core/async/websocket",
   "moonbitlang/core/debug",
   "unmbt/ciallo/core",
   "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
 }
 
 // Values
 pub async fn serve(@core.App, options? : NativeServerOptions, env? : @runtime.Env, on_listen? : (Int32) -> Unit) -> Unit
+
+pub async fn serve_with_ws(@core.App, ws_routes~ : Map[String, async (NativeWsConn) -> Unit], options? : NativeServerOptions, env? : @runtime.Env, on_listen? : (Int32) -> Unit) -> Unit
 
 // Errors
 
@@ -27,6 +31,14 @@ pub(all) struct NativeServerOptions {
 }
 pub fn NativeServerOptions::NativeServerOptions(host? : String, port? : Int32, max_connections? : Int32, reuse_addr? : Bool, install_signal_handlers? : Bool, request_timeout_ms? : Int32, shutdown_timeout_ms? : Int32, public_origin? : String, trust_proxy? : Bool) -> Self
 
+pub struct NativeWsConn {
+  conn : @websocket.Conn
+}
+pub fn NativeWsConn::close(Self) -> Unit
+pub async fn NativeWsConn::recv(Self) -> @http.WsMessage? raise @http.WsError
+pub async fn NativeWsConn::send(Self, @http.WsMessage) -> Unit raise @http.WsError
+
 // Type aliases
+pub type NativeWsHandler = async (NativeWsConn) -> Unit
 
 // Traits

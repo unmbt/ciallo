@@ -1,4 +1,5 @@
 import {
+  "unmbt/webstd/crypto",
   "unmbt/webstd/http",
   "unmbt/webstd/url",
 }

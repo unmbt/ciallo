@@ -436,6 +436,7 @@ async fn handle_single_request(
 ///|
 async fn handle_connection(
   app : @core.App,
+  ws_routes : Map[String, NativeWsHandler],
   conn : @std_http.ServerConnection,
   base_env : @runtime.Env,
   options : NativeServerOptions,
@@ -464,6 +465,26 @@ async fn handle_connection(
     if state.shutting_down {
       break
     }
+    // Check first-class WebSocket upgrade before HTTP dispatch
+    if is_ws_upgrade_request(req_hdr) {
+      let path_only = request_path_only(req_hdr.path)
+      match ws_routes.get(path_only) {
+        Some(ws_handler) => {
+          state.in_flight = state.in_flight + 1
+          defer {
+            state.in_flight = state.in_flight - 1
+            if state.in_flight == 0 {
+              state.drain_cond.broadcast()
+            }
+          }
+          handle_ws_upgrade(conn, req_hdr, ws_handler) catch {
+            _ => ()
+          }
+          break
+        }
+        None => ()
+      }
+    }
     // Stage B: in-flight shielded execution
     state.in_flight = state.in_flight + 1
     let should_close = @async.protect_from_cancel(() => {
@@ -486,6 +507,19 @@ async fn handle_connection(
 ///|
 pub async fn serve(
   app : @core.App,
+  options~ : NativeServerOptions = NativeServerOptions::NativeServerOptions(),
+  env~ : @runtime.Env = @runtime.Env::Env(),
+  on_listen? : (Int32) -> Unit,
+) -> Unit {
+  serve_with_ws(app, ws_routes=Map([]), options~, env~, on_listen?)
+}
+
+///|
+/// Serves an HTTP `@core.App` alongside first-class WebSocket upgrade routes
+/// powered by `moonbitlang/core/async/websocket`.
+pub async fn serve_with_ws(
+  app : @core.App,
+  ws_routes~ : Map[String, NativeWsHandler],
   options~ : NativeServerOptions = NativeServerOptions::NativeServerOptions(),
   env~ : @runtime.Env = @runtime.Env::Env(),
   on_listen? : (Int32) -> Unit,
@@ -566,7 +600,9 @@ pub async fn serve(
       sem.acquire()
       conn_group.spawn_bg(no_wait=true, allow_failure=true, () => {
         defer sem.release()
-        handle_connection(app, conn, env, options, listen_addr_str, state)
+        handle_connection(
+          app, ws_routes, conn, env, options, listen_addr_str, state,
+        )
       })
     }
   })

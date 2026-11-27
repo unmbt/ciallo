@@ -1,0 +1,70 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-actuator"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub let default_latency_buckets_secs : Array[Double]
+
+pub fn mount_actuator(@core.App, registry? : MetricsRegistry, options? : ActuatorOptions) -> @core.App raise @core.AppBuildError
+
+pub async fn run_readiness_probes(Array[&@runtime.HealthCheck], probe_timeout_ms? : Int32) -> (Bool, Array[@runtime.HealthStatus])
+
+// Errors
+
+// Types and methods
+pub struct ActuatorBundle {
+  registry : MetricsRegistry
+  options : ActuatorOptions
+}
+pub fn ActuatorBundle::ActuatorBundle(registry? : MetricsRegistry, options? : ActuatorOptions) -> Self
+pub impl @core.CapabilityBundle for ActuatorBundle
+
+pub(all) struct ActuatorOptions {
+  healthz_path : String
+  readyz_path : String
+  metrics_path : String
+  probe_timeout_ms : Int32
+  enable_debug_endpoints : Bool
+  debug_routes_path : String
+  debug_config_path : String
+  extra_checks : Array[&@runtime.HealthCheck]
+  debug_config_provider : (() -> @json.Json)?
+}
+pub fn ActuatorOptions::ActuatorOptions(healthz_path? : String, readyz_path? : String, metrics_path? : String, probe_timeout_ms? : Int32, enable_debug_endpoints? : Bool, debug_routes_path? : String, debug_config_path? : String, extra_checks? : Array[&@runtime.HealthCheck], debug_config_provider? : () -> @json.Json) -> Self
+
+type HistogramData
+
+pub struct MetricsRegistry {
+  buckets : Array[Double]
+  http_requests : Map[String, Int64]
+  http_duration : HistogramData
+  phase_durations : Map[String, HistogramData]
+  custom_counters : Map[String, Int64]
+  custom_gauges : Map[String, Double]
+  pool_collectors : Array[() -> PoolMetricsSnapshot]
+}
+pub fn MetricsRegistry::MetricsRegistry(buckets? : Array[Double]) -> Self
+pub fn MetricsRegistry::inc_counter(Self, String, delta? : Int64) -> Unit
+pub fn MetricsRegistry::record_trace(Self, @core.TraceSummary) -> Unit
+pub fn MetricsRegistry::register_pool_collector(Self, () -> PoolMetricsSnapshot) -> Unit
+pub fn MetricsRegistry::render_openmetrics(Self) -> String
+pub fn MetricsRegistry::set_gauge(Self, String, Double) -> Unit
+
+#derive(Eq, @debug.Debug)
+pub(all) struct PoolMetricsSnapshot {
+  name : String
+  total : Int32
+  idle : Int32
+  in_use : Int32
+  closed : Bool
+}
+
+// Type aliases
+
+// Traits

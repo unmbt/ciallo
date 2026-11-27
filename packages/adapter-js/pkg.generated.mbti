@@ -5,10 +5,13 @@ import {
   "moonbitlang/core/async/js_async",
   "unmbt/ciallo/core",
   "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
 }
 
 // Values
 pub fn to_fetch_handler(@core.App, env_mapper? : (JsEnv) -> @runtime.Env) -> (JsRequest, JsEnv, JsExecutionContext) -> @js_async.Promise[JsResponse]
+
+pub fn to_fetch_handler_with_ws(@core.App, ws_routes~ : Map[String, JsWsHandler], env_mapper? : (JsEnv) -> @runtime.Env) -> (JsRequest, JsEnv, JsExecutionContext) -> @js_async.Promise[JsResponse]
 
 // Errors
 
@@ -24,6 +27,22 @@ pub type JsRequest
 
 #external
 pub type JsResponse
+
+#external
+pub type JsWebSocket
+
+pub(all) struct JsWsHandler {
+  on_open : (JsWsSession) -> Unit
+  on_message : (JsWsSession, @http.WsMessage) -> Unit
+  on_close : (JsWsSession, @http.WsCloseCode, String) -> Unit
+}
+pub fn JsWsHandler::JsWsHandler(on_open? : (JsWsSession) -> Unit, on_message~ : (JsWsSession, @http.WsMessage) -> Unit, on_close? : (JsWsSession, @http.WsCloseCode, String) -> Unit) -> Self
+
+pub struct JsWsSession {
+  ws : JsWebSocket
+}
+pub fn JsWsSession::close(Self, code? : @http.WsCloseCode, reason? : String) -> Unit
+pub fn JsWsSession::send(Self, @http.WsMessage) -> Unit
 
 // Type aliases
 

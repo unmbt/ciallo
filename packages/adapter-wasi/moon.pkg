@@ -1,0 +1,17 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "unmbt/webstd/http",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-wasi" @ciallo_wasi,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

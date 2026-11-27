@@ -1,0 +1,17 @@
+import {
+  "moonbitlang/core/async",
+  "unmbt/webstd/http",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+}
+
+import {
+  "unmbt/ciallo-actuator" @ciallo_actuator,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

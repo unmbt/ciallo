@@ -1,0 +1,24 @@
+import {
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo-orm/dialect",
+  "unmbt/ciallo-orm/driver",
+  "unmbt/ciallo-orm/query",
+  "unmbt/ciallo-orm/schema" @orm_schema,
+  "unmbt/ciallo-redis/client" @redis_client,
+  "unmbt/ciallo-redis/resp",
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-data/codec",
+  "unmbt/ciallo-queue" @ciallo_queue,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

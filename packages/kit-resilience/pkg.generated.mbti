@@ -1,0 +1,130 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-resilience"
+
+import {
+  "moonbitlang/core/async/cond_var",
+  "moonbitlang/core/debug",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn rate_limit_guard(RateLimiter, key_extractor? : (@core.Context) -> String) -> async (@core.Context) -> @http.Response?
+
+pub async fn[T] retry_with_jitter(config? : RetryConfig, should_retry? : (Error) -> Bool, async () -> T) -> T
+
+pub async fn[T] with_timeout(timeout_ms~ : Int32, async () -> T) -> T
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror ResilienceError {
+  CircuitOpen(retry_after_ms~ : Int64)
+  ConcurrencyLimitExceeded(max_concurrent~ : Int32)
+  TimedOut(timeout_ms~ : Int32)
+}
+
+// Types and methods
+pub struct CircuitBreaker {
+  clock : &@runtime.Clock
+  config : CircuitBreakerConfig
+  mut state : CircuitState
+  mut consecutive_failures : Int32
+  mut half_open_successes : Int32
+  mut opened_at_ms : Int64
+}
+pub fn CircuitBreaker::CircuitBreaker(clock~ : &@runtime.Clock, config? : CircuitBreakerConfig) -> Self
+pub fn CircuitBreaker::allow_request(Self) -> Unit raise ResilienceError
+pub async fn[T] CircuitBreaker::execute(Self, async () -> T) -> T
+pub fn CircuitBreaker::record_failure(Self) -> Unit
+pub fn CircuitBreaker::record_success(Self) -> Unit
+pub fn CircuitBreaker::state(Self) -> CircuitState
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CircuitBreakerConfig {
+  failure_threshold : Int32
+  reset_timeout_ms : Int64
+  half_open_success_threshold : Int32
+}
+pub fn CircuitBreakerConfig::CircuitBreakerConfig(failure_threshold? : Int32, reset_timeout_ms? : Int64, half_open_success_threshold? : Int32) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum CircuitState {
+  Closed
+  Open
+  HalfOpen
+}
+
+pub struct ConcurrencyLimiter {
+  max_concurrent : Int32
+  mut in_flight : Int32
+}
+pub fn ConcurrencyLimiter::ConcurrencyLimiter(max_concurrent~ : Int32) -> Self
+pub async fn[T] ConcurrencyLimiter::execute(Self, async () -> T) -> T
+pub fn ConcurrencyLimiter::in_flight(Self) -> Int32
+
+pub struct IdempotencyBundle {
+  kv : &@runtime.KvStore
+  header_name : String
+  key_prefix : String
+  ttl_secs : Int32
+  in_flight : Map[String, @cond_var.Cond]
+}
+pub fn IdempotencyBundle::IdempotencyBundle(kv~ : &@runtime.KvStore, header_name? : String, key_prefix? : String, ttl_secs? : Int32) -> Self
+pub impl @core.CapabilityBundle for IdempotencyBundle
+
+#derive(Eq, @debug.Debug)
+pub(all) enum RateLimitAlgorithm {
+  TokenBucket
+  SlidingWindow
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RateLimitConfig {
+  algorithm : RateLimitAlgorithm
+  limit : Int32
+  window_ms : Int64
+  key_prefix : String
+}
+pub fn RateLimitConfig::RateLimitConfig(algorithm? : RateLimitAlgorithm, limit? : Int32, window_ms? : Int64, key_prefix? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RateLimitDecision {
+  allowed : Bool
+  limit : Int32
+  remaining : Int32
+  reset_at_ms : Int64
+  retry_after_secs : Int32
+}
+
+pub struct RateLimiter {
+  kv : &@runtime.KvStore
+  clock : &@runtime.Clock
+  config : RateLimitConfig
+}
+pub fn RateLimiter::RateLimiter(kv~ : &@runtime.KvStore, clock~ : &@runtime.Clock, config? : RateLimitConfig) -> Self
+pub async fn RateLimiter::check(Self, StringView) -> RateLimitDecision
+
+pub struct ResilientHttpClient {
+  inner : &@runtime.HttpClient
+  circuit_breaker : CircuitBreaker?
+  concurrency : ConcurrencyLimiter?
+  retry : RetryConfig?
+  timeout_ms : Int32?
+}
+pub fn ResilientHttpClient::ResilientHttpClient(&@runtime.HttpClient, circuit_breaker? : CircuitBreaker, concurrency? : ConcurrencyLimiter, retry? : RetryConfig, timeout_ms? : Int32) -> Self
+pub impl @runtime.HttpClient for ResilientHttpClient
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RetryConfig {
+  max_attempts : Int32
+  base_delay_ms : Int32
+  max_delay_ms : Int32
+  jitter_seed : UInt64
+}
+pub fn RetryConfig::RetryConfig(max_attempts? : Int32, base_delay_ms? : Int32, max_delay_ms? : Int32, jitter_seed? : UInt64) -> Self
+
+// Type aliases
+
+// Traits

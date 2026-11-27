@@ -3,6 +3,7 @@ import {
   "moonbitlang/core/async/http" @std_http,
   "moonbitlang/core/async/signal",
   "moonbitlang/core/async/socket",
+  "moonbitlang/core/async/websocket" @std_ws,
   "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/string",
   "unmbt/webstd/http",
@@ -22,5 +23,6 @@ options(
     "moonbitlang/core/async/http",
     "moonbitlang/core/async/signal",
     "moonbitlang/core/async/socket",
+    "moonbitlang/core/async/websocket",
   ],
 )

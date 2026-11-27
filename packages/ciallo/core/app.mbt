@@ -407,10 +407,10 @@ pub fn App::use_plugin(
   let parent_trace = extract_hooks(self.trace_listeners)
 
   // 2 & 3. Prefix join + deep-copied routes & lexical hooks merge
-  let combined_prefix = join_prefix(self.prefix, plugin.prefix)
+  // Note: `entry.path` already includes `plugin.prefix` from `plugin.route(...)`.
   let sub_routes = plugin.routes.copy()
   for entry in sub_routes {
-    let full_path = join_prefix(combined_prefix, entry.path)
+    let full_path = join_prefix(self.prefix, entry.path)
     let merged_entry : RouteEntry = {
       meth: entry.meth,
       path: full_path,

@@ -1,0 +1,55 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-config"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/schema",
+}
+
+// Values
+pub fn parse_toml(StringView) -> @json.Json raise ConfigError
+
+pub fn redact_config_json(@json.Json, extra_sensitive_keys? : Array[String]) -> @json.Json
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror ConfigError {
+  ParseError(source~ : String, message~ : String)
+  ValidationFailed(issues~ : Array[@schema.ValidationIssue])
+  DecodeFailed(String)
+}
+
+// Types and methods
+pub struct ConfigLoader {
+  layers : Array[@json.Json]
+}
+pub fn ConfigLoader::ConfigLoader() -> Self
+pub fn[T : @json.FromJson + @schema.Schema] ConfigLoader::load_as(Self) -> T raise ConfigError
+pub fn ConfigLoader::load_json(Self, @schema.SchemaNode) -> @json.Json raise ConfigError
+pub fn ConfigLoader::merged_raw(Self) -> @json.Json
+pub fn ConfigLoader::with_binding_json(Self, @json.Json) -> Self
+pub fn ConfigLoader::with_defaults(Self, @json.Json) -> Self
+pub fn ConfigLoader::with_env_lookup(Self, Array[String], (StringView) -> String?, prefix? : String) -> Self
+pub fn ConfigLoader::with_env_vars(Self, Map[String, String], prefix? : String) -> Self
+pub fn ConfigLoader::with_json(Self, StringView) -> Self raise ConfigError
+pub fn ConfigLoader::with_toml(Self, StringView) -> Self raise ConfigError
+
+pub struct Secret[T] {
+  value : T
+}
+pub fn[T] Secret::Secret(T) -> Self[T]
+pub fn[T] Secret::expose(Self[T]) -> T
+pub fn[T] Secret::to_json(Self[T]) -> @json.Json
+pub fn[T] Secret::to_string(Self[T]) -> String
+pub impl Eq for Secret[String]
+pub impl[T] Show for Secret[T]
+pub impl[T] @debug.Debug for Secret[T]
+pub impl[T : @json.FromJson] @json.FromJson for Secret[T]
+pub impl[T] @json.ToJson for Secret[T]
+pub impl[T : @schema.Schema] @schema.Schema for Secret[T]
+
+// Type aliases
+
+// Traits

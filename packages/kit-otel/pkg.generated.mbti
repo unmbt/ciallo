@@ -1,0 +1,92 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-otel"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn encode_otlp_payload(ResourceInfo, Array[OtelSpan]) -> @json.Json
+
+// Errors
+
+// Types and methods
+pub struct OtelBundle {
+  exporter : OtlpBatchExporter
+  clock : &@runtime.Clock
+}
+pub fn OtelBundle::OtelBundle(exporter~ : OtlpBatchExporter, clock~ : &@runtime.Clock) -> Self
+pub impl @core.CapabilityBundle for OtelBundle
+
+#derive(Eq, @debug.Debug)
+pub(all) struct OtelSpan {
+  trace_id : String
+  span_id : String
+  parent_span_id : String?
+  name : String
+  kind : SpanKind
+  start_time_unix_nano : Int64
+  end_time_unix_nano : Int64
+  status : SpanStatus
+  attributes : Map[String, String]
+}
+pub fn OtelSpan::to_otlp_json(Self) -> @json.Json
+
+pub struct OtlpBatchExporter {
+  endpoint : String
+  resource : ResourceInfo
+  http_client : &@runtime.HttpClient
+  max_batch_size : Int32
+  headers : Map[String, String]
+  pending : Array[OtelSpan]
+  mut exported_count : Int64
+}
+pub fn OtlpBatchExporter::OtlpBatchExporter(endpoint? : String, resource~ : ResourceInfo, http_client~ : &@runtime.HttpClient, max_batch_size? : Int32, headers? : Map[String, String]) -> Self
+pub fn OtlpBatchExporter::enqueue(Self, OtelSpan) -> Unit
+pub fn OtlpBatchExporter::exported_count(Self) -> Int64
+pub async fn OtlpBatchExporter::flush(Self) -> Unit noraise
+pub fn OtlpBatchExporter::pending_count(Self) -> Int32
+pub async fn OtlpBatchExporter::record(Self, OtelSpan) -> Unit noraise
+pub impl @runtime.Lifecycle for OtlpBatchExporter
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ResourceInfo {
+  service_name : String
+  service_version : String
+  environment : String
+}
+pub fn ResourceInfo::ResourceInfo(service_name~ : String, service_version? : String, environment? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SpanKind {
+  Internal
+  Server
+  Client
+  Producer
+  Consumer
+}
+pub fn SpanKind::otlp_code(Self) -> Int32
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SpanStatus {
+  Unset
+  Ok
+  Error(String)
+}
+
+pub struct TracingHttpClient {
+  inner : &@runtime.HttpClient
+  parent_trace : @runtime.TraceContext
+  clock : &@runtime.Clock
+  exporter : OtlpBatchExporter?
+}
+pub fn TracingHttpClient::TracingHttpClient(&@runtime.HttpClient, parent_trace~ : @runtime.TraceContext, clock~ : &@runtime.Clock, exporter? : OtlpBatchExporter) -> Self
+pub impl @runtime.HttpClient for TracingHttpClient
+
+// Type aliases
+
+// Traits

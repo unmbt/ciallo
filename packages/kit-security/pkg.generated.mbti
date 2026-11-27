@@ -1,0 +1,139 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-security"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn jwt_auth_guard(secret~ : Bytes, clock? : &@runtime.Clock, issuer? : String, audience? : String, leeway_secs? : Int64) -> async (@core.Context) -> @http.Response?
+
+pub fn mount_cors(@core.App, options? : CorsOptions) -> @core.App raise @core.AppBuildError
+
+pub fn paseto_v4_decrypt(StringView, key~ : BytesView, implicit_assertion? : BytesView) -> (Bytes, Bytes) raise SecurityError
+
+pub fn paseto_v4_encrypt(BytesView, key~ : BytesView, nonce~ : BytesView, footer? : BytesView, implicit_assertion? : BytesView) -> String raise SecurityError
+
+pub let principal_key : @runtime.ContextKey[AuthPrincipal]
+
+pub fn require_any_role(Array[String]) -> async (@core.Context) -> @http.Response?
+
+pub fn require_policy((@core.Context, AuthPrincipal) -> Bool, detail? : String) -> async (@core.Context) -> @http.Response?
+
+pub fn require_roles(Array[String]) -> async (@core.Context) -> @http.Response?
+
+pub fn sign_jwt_hs256(JwtClaims, secret~ : BytesView) -> String
+
+pub fn verify_jwt_hs256(StringView, secret~ : BytesView, now_secs? : Int64, issuer? : String, audience? : String, leeway_secs? : Int64) -> JwtClaims raise SecurityError
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror SecurityError {
+  MalformedToken(String)
+  InvalidSignature
+  TokenExpired(exp~ : Int64, now~ : Int64)
+  TokenNotYetValid(nbf~ : Int64, now~ : Int64)
+  InvalidClaim(claim~ : String, message~ : String)
+  InvalidPasswordHash(String)
+  CryptoFailure(String)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub struct Argon2idHasher {
+  memory_kib : Int32
+  iterations : Int32
+  tag_len : Int32
+}
+pub fn Argon2idHasher::Argon2idHasher(memory_kib? : Int32, iterations? : Int32, tag_len? : Int32) -> Self
+pub fn Argon2idHasher::hash_password(Self, StringView, salt~ : BytesView) -> String raise SecurityError
+pub fn Argon2idHasher::verify_password(Self, StringView, StringView) -> Bool raise SecurityError
+pub impl PasswordHasher for Argon2idHasher
+
+#derive(Eq, @debug.Debug)
+pub(all) struct AuthPrincipal {
+  subject : String
+  roles : Array[String]
+  claims : JwtClaims
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CorsOptions {
+  allowed_origins : Array[String]
+  allowed_methods : Array[String]
+  allowed_headers : Array[String]
+  exposed_headers : Array[String]
+  allow_credentials : Bool
+  max_age_secs : Int32?
+}
+pub fn CorsOptions::CorsOptions(allowed_origins? : Array[String], allowed_methods? : Array[String], allowed_headers? : Array[String], exposed_headers? : Array[String], allow_credentials? : Bool, max_age_secs? : Int32) -> Self
+
+pub struct CsrfBundle {
+  options : CsrfOptions
+}
+pub fn CsrfBundle::CsrfBundle(options? : CsrfOptions) -> Self
+pub impl @core.CapabilityBundle for CsrfBundle
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CsrfOptions {
+  cookie_name : String
+  header_name : String
+  allowed_origins : Array[String]
+}
+pub fn CsrfOptions::CsrfOptions(cookie_name? : String, header_name? : String, allowed_origins? : Array[String]) -> Self
+
+pub struct HelmetBundle {
+  options : HelmetOptions
+}
+pub fn HelmetBundle::HelmetBundle(options? : HelmetOptions) -> Self
+pub impl @core.CapabilityBundle for HelmetBundle
+
+#derive(Eq, @debug.Debug)
+pub(all) struct HelmetOptions {
+  frame_options : String
+  referrer_policy : String
+  hsts : String?
+  content_security_policy : String?
+  coop : String
+  permissions_policy : String?
+}
+pub fn HelmetOptions::HelmetOptions(frame_options? : String, referrer_policy? : String, hsts? : String, content_security_policy? : String, coop? : String, permissions_policy? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct JwtClaims {
+  sub : String?
+  iss : String?
+  aud : String?
+  exp : Int64?
+  nbf : Int64?
+  iat : Int64?
+  jti : String?
+  roles : Array[String]
+  extra : Map[String, @json.Json]
+}
+pub fn JwtClaims::JwtClaims(sub? : String, iss? : String, aud? : String, exp? : Int64, nbf? : Int64, iat? : Int64, jti? : String, roles? : Array[String], extra? : Map[String, @json.Json]) -> Self
+pub fn JwtClaims::from_json_value(@json.Json) -> Self raise SecurityError
+pub fn JwtClaims::to_json(Self) -> @json.Json
+
+#derive(Eq, @debug.Debug)
+pub struct Pbkdf2Hasher {
+  iterations : Int32
+  dk_len : Int32
+}
+pub fn Pbkdf2Hasher::Pbkdf2Hasher(iterations? : Int32, dk_len? : Int32) -> Self
+pub fn Pbkdf2Hasher::hash_password(Self, StringView, salt~ : BytesView) -> String raise SecurityError
+pub fn Pbkdf2Hasher::verify_password(Self, StringView, StringView) -> Bool raise SecurityError
+pub impl PasswordHasher for Pbkdf2Hasher
+
+// Type aliases
+
+// Traits
+pub(open) trait PasswordHasher {
+  fn hash_password(Self, StringView, salt~ : BytesView) -> String raise SecurityError
+  fn verify_password(Self, StringView, StringView) -> Bool raise SecurityError
+}

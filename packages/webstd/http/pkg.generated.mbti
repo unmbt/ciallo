@@ -24,6 +24,14 @@ pub(all) suberror StreamError {
   StreamAlreadyConsumed
 }
 
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror WsError {
+  Closed(code~ : WsCloseCode, reason~ : String)
+  ProtocolFailure(String)
+  IoFailure(String)
+}
+
 // Types and methods
 pub(all) enum Body {
   Empty
@@ -71,6 +79,28 @@ pub(all) struct CookieOptions {
   partitioned : Bool
 }
 pub fn CookieOptions::CookieOptions(path? : String, domain? : String, max_age? : Int64, expires? : String, http_only? : Bool, secure? : Bool, same_site? : SameSite, partitioned? : Bool) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct FormData {
+  entries : Array[(String, FormEntry)]
+}
+pub fn FormData::FormData(entries? : Array[(String, FormEntry)]) -> Self
+pub fn FormData::append_file(Self, StringView, filename~ : String, content_type? : String, bytes~ : Bytes) -> Unit
+pub fn FormData::append_text(Self, StringView, StringView) -> Unit
+pub fn FormData::encode_multipart(Self, boundary? : String) -> (String, Bytes)
+pub fn FormData::encode_urlencoded(Self) -> String
+pub fn FormData::entries(Self) -> Array[(String, FormEntry)]
+pub fn FormData::get(Self, StringView) -> FormEntry?
+pub fn FormData::get_all(Self, StringView) -> Array[FormEntry]
+pub fn FormData::get_text(Self, StringView) -> String?
+pub fn FormData::parse_multipart(StringView, BytesView) -> Self raise StreamError
+pub fn FormData::parse_urlencoded(StringView) -> Self raise @url.UrlError
+
+#derive(Eq, @debug.Debug)
+pub(all) enum FormEntry {
+  Text(String)
+  File(filename~ : String, content_type~ : String, bytes~ : Bytes)
+}
 
 #derive(Eq, @debug.Debug)
 pub struct Headers {
@@ -162,6 +192,14 @@ pub(all) struct SseEvent {
 pub fn SseEvent::SseEvent(data~ : String, id? : String, event? : String, retry_ms? : Int32) -> Self
 pub fn SseEvent::encode(Self) -> Bytes
 
+pub struct TransformStream {
+  transform : (Bytes) -> Array[Bytes] raise StreamError
+  flush : () -> Array[Bytes] raise StreamError
+}
+pub fn TransformStream::TransformStream(transform~ : (Bytes) -> Array[Bytes] raise StreamError, flush? : () -> Array[Bytes] raise StreamError) -> Self
+pub fn TransformStream::pipe(Self, ByteStream) -> ByteStream
+pub fn TransformStream::process_chunks(Self, Array[Bytes]) -> Array[Bytes] raise StreamError
+
 #derive(Eq, @debug.Debug)
 pub(all) struct TypedSseEvent[T] {
   id : String?
@@ -170,6 +208,32 @@ pub(all) struct TypedSseEvent[T] {
   retry_ms : Int32?
 }
 pub fn[T] TypedSseEvent::TypedSseEvent(data~ : T, id? : String, event? : String, retry_ms? : Int32) -> Self[T]
+
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) enum WsCloseCode {
+  Normal
+  GoingAway
+  ProtocolError
+  UnsupportedData
+  InvalidPayload
+  PolicyViolation
+  MessageTooBig
+  InternalError
+  Custom(Int32)
+}
+pub fn WsCloseCode::code(Self) -> Int32
+pub fn WsCloseCode::from_code(Int32) -> Self
+
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) enum WsMessage {
+  Text(String)
+  Binary(Bytes)
+  Ping(Bytes)
+  Pong(Bytes)
+  Close(code~ : WsCloseCode, reason~ : String)
+}
 
 // Type aliases
 

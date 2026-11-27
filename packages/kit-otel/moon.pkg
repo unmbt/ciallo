@@ -1,0 +1,16 @@
+import {
+  "unmbt/webstd/http",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-otel" @ciallo_otel,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

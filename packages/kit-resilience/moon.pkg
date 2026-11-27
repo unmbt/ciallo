@@ -1,0 +1,19 @@
+import {
+  "moonbitlang/core/async",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+  "unmbt/webstd/crypto",
+  "unmbt/webstd/http",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+import {
+  "unmbt/ciallo-resilience" @ciallo_resilience,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)
