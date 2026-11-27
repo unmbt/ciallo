@@ -46,6 +46,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: steps.check-state.outputs.present == 'true'
         run: moon update
+      - name: Build ciallo-gen Wasm CLI
+        if: steps.check-state.outputs.present == 'true'
+        run: moon build packages/gen/cmd/ciallo-gen --target wasm
       - id: release
         if: steps.check-state.outputs.present == 'true'
         uses: unmbt/moonset@v1
