@@ -2,6 +2,7 @@
 
 - 状态：Accepted
 - 日期：2026-11-27
+- 修订注记：> **Amended by** [ADR-013](013-canonical-spelling-only-and-http-error-helpers.md)（取消 `ciallo-gen` 旧写法 `Int`/`UInt`/`Option[T]` 双拼写兼容，统一严格仅接受 `moon fmt` / `moon fix` 后的 `Int32`/`UInt32`/`T?` 规范拼写，并补齐 `HttpError` 全部 11 个 `#callsite` 构造器契约）。
 - 关联：`REQ-WORK-01`、`REQ-HTTP-01`、`REQ-HTTP-02`、`REQ-ROUTER-01`、`REQ-ROUTER-02`、`REQ-LIFE-01` ~ `REQ-LIFE-03`、`REQ-SCOPE-01`、`REQ-CONTRACT-01` ~ `REQ-CONTRACT-03`、`REQ-GEN-01`、`REQ-EDEN-01`、`REQ-TEST-01`、`REQ-ADAPTER-01`、`REQ-ADAPTER-02`、`REQ-ENV-01`、`REQ-REDIS-03`
 - 关系：基于本机 **MoonBit `v1.0.0-rc1`（`moon 0.1.20261126`）** 编译器探针与 `moonbitlang/core` 标准库源码实证，补充并修订 [ADR-004](004-type-sound-errors-schema-ssot-and-serverless-context.md)、[ADR-006](006-data-suite-orm-redis-mongodb.md) ~ [ADR-011](011-v1-rc1-alignment-and-contract-hardening.md) 的类型契约、异步取消机制与阶段边界。
 

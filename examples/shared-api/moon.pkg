@@ -1,0 +1,19 @@
+import {
+  "unmbt/ciallo",
+  "unmbt/ciallo/schema",
+}
+
+import {
+  "moonbitlang/core/async",
+  "moonbitlang/core/json",
+  "unmbt/ciallo-testing" @ciallo_testing,
+  "unmbt/ciallo-example-shared" @shared,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+dev_build(rule: "ciallo_schema", input: "dto.mbt", output: "dto.schema.gen.mbt")
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

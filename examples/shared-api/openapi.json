@@ -1,0 +1,321 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Ciallo Shared API",
+    "version": "0.1.0",
+    "description": "Cross-runtime shared API running identically on Native and Cloudflare Workers"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "get_health",
+        "summary": "Health check",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "get_health",
+          "method": "GET",
+          "path": "/health"
+        }
+      }
+    },
+    "/todos": {
+      "post": {
+        "operationId": "create_todo",
+        "summary": "Create a todo item",
+        "tags": [
+          "todos"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTodoReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoOut"
+                }
+              }
+            }
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "create_todo",
+          "method": "POST",
+          "path": "/todos"
+        }
+      }
+    },
+    "/todos/{id}": {
+      "patch": {
+        "operationId": "patch_todo",
+        "summary": "Partially update a todo item with PATCH tri-state",
+        "tags": [
+          "todos"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchTodoReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TodoOut"
+                }
+              }
+            }
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "patch_todo",
+          "method": "PATCH",
+          "path": "/todos/:id"
+        }
+      },
+      "delete": {
+        "operationId": "delete_todo",
+        "summary": "Delete a todo item",
+        "tags": [
+          "todos"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "delete_todo",
+          "method": "DELETE",
+          "path": "/todos/:id"
+        }
+      }
+    },
+    "/stream/tokens": {
+      "get": {
+        "operationId": "stream_tokens",
+        "summary": "Stream tokens over SSE",
+        "tags": [
+          "ai"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamToken"
+                }
+              }
+            }
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "stream_tokens",
+          "method": "GET",
+          "path": "/stream/tokens",
+          "stream": {
+            "kind": "sse",
+            "dataSchema": {
+              "$ref": "#/components/schemas/StreamToken"
+            }
+          }
+        }
+      }
+    },
+    "/openapi.json": {
+      "get": {
+        "operationId": "get_openapi",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "get_openapi",
+          "method": "GET",
+          "path": "/openapi.json"
+        }
+      }
+    },
+    "/docs": {
+      "get": {
+        "operationId": "get_docs",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        },
+        "x-ciallo-eden": {
+          "operationId": "get_docs",
+          "method": "GET",
+          "path": "/docs"
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Priority": {
+        "type": "string",
+        "enum": [
+          "Low",
+          "Normal",
+          "High"
+        ]
+      },
+      "CreateTodoReq": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "note": {
+            "type": "string"
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "title"
+        ],
+        "x-ciallo-schema-id": "CreateTodoReq"
+      },
+      "TodoOut": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "int64",
+            "pattern": "^-?[0-9]+$"
+          },
+          "title": {
+            "type": "string"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "priority": {
+            "$ref": "#/components/schemas/Priority"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "title",
+          "note",
+          "priority"
+        ],
+        "x-ciallo-schema-id": "TodoOut"
+      },
+      "PatchTodoReq": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "x-ciallo-schema-id": "PatchTodoReq"
+      },
+      "StreamToken": {
+        "type": "object",
+        "properties": {
+          "seq": {
+            "type": "integer",
+            "minimum": -2147483648,
+            "maximum": 2147483647,
+            "format": "int32"
+          },
+          "text": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "seq",
+          "text"
+        ],
+        "x-ciallo-schema-id": "StreamToken"
+      }
+    }
+  }
+}

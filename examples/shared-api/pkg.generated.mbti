@@ -1,0 +1,64 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-example-shared"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo/schema",
+}
+
+// Values
+pub fn api_info() -> @openapi.OpenApiInfo
+
+pub fn build_app(kv? : &@runtime.KvStore) -> @core.App raise @core.AppBuildError
+
+pub let kv_key : @runtime.ContextKey[&@runtime.KvStore]
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct CreateTodoReq {
+  title : String
+  note : String?
+  priority : Priority?
+}
+pub impl @schema.Schema for CreateTodoReq
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct PatchTodoReq {
+  title : String?
+  note : @schema.Nullable[String]?
+}
+pub impl @schema.Schema for PatchTodoReq
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) enum Priority {
+  Low
+  Normal
+  High
+}
+pub impl @schema.Schema for Priority
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct StreamToken {
+  seq : Int32
+  text : String
+}
+pub impl @schema.Schema for StreamToken
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct TodoOut {
+  id : Int64
+  title : String
+  note : @schema.Nullable[String]
+  priority : Priority
+}
+pub impl @schema.Schema for TodoOut
+
+// Type aliases
+
+// Traits

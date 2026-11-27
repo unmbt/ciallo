@@ -1,0 +1,31 @@
+import {
+  "unmbt/webstd/http",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+}
+
+#cfg(any(target = "native", target = "wasm"))
+import {
+  "moonbitlang/core/async/fs",
+}
+
+#cfg(target = "js")
+import {
+  "moonbitlang/core/async",
+}
+
+import {
+  "moonbitlang/core/async",
+  "unmbt/ciallo-testing" @ciallo_testing,
+} for "test"
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [
+    "moonbitlang/core/async",
+    "moonbitlang/core/async/fs",
+  ],
+  targets: { "sync_fs.mbt": [ "native", "wasm" ], "sync_fs_js.mbt": [ "js" ] },
+)

@@ -1,0 +1,11 @@
+members = [
+  "./packages/webstd",
+  "./packages/ciallo",
+  "./packages/adapter-native",
+  "./packages/adapter-js",
+  "./packages/gen",
+  "./packages/testing",
+  "./examples/shared-api",
+  "./examples/native-server",
+  "./examples/cf-worker",
+]

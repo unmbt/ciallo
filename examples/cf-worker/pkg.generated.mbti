@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-example-worker"
+
+import {
+  "moonbitlang/core/async/js_async",
+  "unmbt/ciallo-js",
+}
+
+// Values
+pub fn worker_fetch(@ciallo-js.JsRequest, @ciallo-js.JsEnv, @ciallo-js.JsExecutionContext) -> @js_async.Promise[@ciallo-js.JsResponse]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits

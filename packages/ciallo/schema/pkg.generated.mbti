@@ -1,0 +1,161 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo/schema"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+}
+
+// Values
+pub fn coerce_query_params(Map[String, Array[String]], SchemaNode) -> @json.Json raise ValidationError
+
+pub fn coerce_string_map(Map[String, String], SchemaNode) -> @json.Json raise ValidationError
+
+pub fn normalize_json(@json.Json, SchemaNode) -> @json.Json
+
+pub fn[T : Schema] schema_of(T?) -> SchemaNode
+
+pub fn[T : Schema] schema_ref_of(T?) -> SchemaNode
+
+pub fn validate_json(@json.Json, SchemaNode) -> Array[ValidationIssue]
+
+// Errors
+#derive(Eq, @debug.Debug)
+pub(all) suberror ValidationError {
+  InvalidInput(issues~ : Array[ValidationIssue])
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct Base64Bytes(Bytes)
+pub fn Base64Bytes::to_json(Self) -> @json.Json
+pub impl @json.FromJson for Base64Bytes
+pub impl @json.ToJson for Base64Bytes
+pub impl Schema for Base64Bytes
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct CursorPage[T] {
+  items : Array[T]
+  next_cursor : String?
+  has_more : Bool
+}
+pub impl[T : Schema] Schema for CursorPage[T]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct NoContent {
+}
+pub fn NoContent::to_json(Self) -> @json.Json
+pub impl @json.FromJson for NoContent
+pub impl @json.ToJson for NoContent
+pub impl Schema for NoContent
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) enum Nullable[T] {
+  Null
+  Value(T)
+}
+pub fn[T : @json.ToJson] Nullable::to_json(Self[T]) -> @json.Json
+pub impl[T : @json.FromJson] @json.FromJson for Nullable[T]
+pub impl[T : @json.ToJson] @json.ToJson for Nullable[T]
+pub impl[T : Schema] Schema for Nullable[T]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ObjectField {
+  name : String
+  schema : SchemaNode
+  required : Bool
+  description : String?
+}
+pub fn ObjectField::ObjectField(String, SchemaNode, required? : Bool, description? : String) -> Self
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct Page[T] {
+  items : Array[T]
+  total : Int64
+  page : Int32
+  page_size : Int32
+}
+pub impl[T : Schema] Schema for Page[T]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SchemaMeta {
+  description : String?
+  format : String?
+  pattern : String?
+  default : @json.Json?
+  deprecated : Bool
+}
+pub fn SchemaMeta::SchemaMeta(description? : String, format? : String, pattern? : String, default? : @json.Json, deprecated? : Bool) -> Self
+
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) enum SchemaNode {
+  Any
+  Empty
+  Null
+  Boolean(meta~ : SchemaMeta)
+  Integer(min~ : Int64?, max~ : Int64?, meta~ : SchemaMeta)
+  Int64String(min~ : Int64?, max~ : Int64?, meta~ : SchemaMeta)
+  Number(min~ : Double?, max~ : Double?, meta~ : SchemaMeta)
+  String(min_len~ : Int32?, max_len~ : Int32?, meta~ : SchemaMeta)
+  Array(items~ : SchemaNode, min_items~ : Int32?, max_items~ : Int32?, meta~ : SchemaMeta)
+  Record(value~ : SchemaNode, meta~ : SchemaMeta)
+  Object(fields~ : Array[ObjectField], additional_properties~ : Bool, schema_id~ : String?, meta~ : SchemaMeta)
+  Enum(values~ : Array[String], meta~ : SchemaMeta)
+  Union(variants~ : Array[SchemaNode], meta~ : SchemaMeta)
+  Nullable(SchemaNode)
+  Ref(SchemaRef)
+}
+pub fn SchemaNode::array(Self, min_items? : Int32, max_items? : Int32, meta? : SchemaMeta) -> Self
+pub fn SchemaNode::boolean(meta? : SchemaMeta) -> Self
+pub fn SchemaNode::empty() -> Self
+pub fn SchemaNode::int64_string(min? : Int64, max? : Int64, meta? : SchemaMeta) -> Self
+pub fn SchemaNode::integer(min? : Int64, max? : Int64, meta? : SchemaMeta) -> Self
+pub fn SchemaNode::nullable(Self) -> Self
+pub fn SchemaNode::number(min? : Double, max? : Double, meta? : SchemaMeta) -> Self
+pub fn SchemaNode::object(Array[ObjectField], additional_properties? : Bool, schema_id? : String, meta? : SchemaMeta) -> Self
+pub fn SchemaNode::record(Self, meta? : SchemaMeta) -> Self
+pub fn SchemaNode::schema_id(Self) -> String?
+pub fn SchemaNode::schema_ref(id~ : String, build~ : () -> Self) -> Self
+pub fn SchemaNode::str_enum(Array[String], meta? : SchemaMeta) -> Self
+pub fn SchemaNode::string(min_len? : Int32, max_len? : Int32, meta? : SchemaMeta) -> Self
+
+pub struct SchemaRef {
+  id : String
+  // private fields
+}
+pub fn SchemaRef::SchemaRef(id~ : String, build~ : () -> SchemaNode) -> Self
+pub fn SchemaRef::resolve(Self) -> SchemaNode
+pub impl Eq for SchemaRef
+pub impl @debug.Debug for SchemaRef
+
+#derive(Eq, @debug.Debug, @json.FromJson, @json.ToJson)
+pub(all) struct ValidationIssue {
+  path : String
+  message : String
+  expected : String
+}
+pub fn ValidationIssue::to_json(Self) -> @json.Json
+
+// Type aliases
+
+// Traits
+pub(open) trait Schema {
+  fn schema_node(Self?) -> SchemaNode
+  fn schema_ref(Self?) -> SchemaNode = _
+  fn schema_id(Self?) -> String? = _
+  fn contains_dynamic_or_sensitive(Self?) -> Bool = _
+}
+pub impl Schema for Bool
+pub impl Schema for Int32
+pub impl Schema for Int64
+pub impl Schema for UInt32
+pub impl Schema for UInt64
+pub impl Schema for Float
+pub impl Schema for Double
+pub impl Schema for String
+pub impl[T : Schema] Schema for FixedArray[T]
+pub impl[T : Schema] Schema for ReadOnlyArray[T]
+pub impl[T : Schema] Schema for Array[T]
+pub impl[V : Schema] Schema for Map[String, V]
+pub impl Schema for @json.Json

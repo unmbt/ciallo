@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-testing"
+
+import {
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub async fn sync_openapi(@core.App, @openapi.OpenApiInfo, StringView, check_only? : Bool) -> Unit
+
+// Errors
+
+// Types and methods
+pub struct TestClient {
+  // private fields
+}
+pub fn TestClient::TestClient(@core.App, env? : @runtime.Env) -> Self
+pub fn TestClient::clear_cookies(Self) -> Unit
+pub async fn TestClient::get(Self, StringView, headers? : @http.Headers) -> @http.Response
+pub async fn TestClient::post_json(Self, StringView, @json.Json, headers? : @http.Headers) -> @http.Response
+pub async fn TestClient::request(Self, @http.Request) -> @http.Response
+pub fn TestClient::with_bearer(Self, StringView) -> Self
+
+// Type aliases
+
+// Traits

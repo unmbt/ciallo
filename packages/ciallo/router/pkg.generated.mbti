@@ -1,0 +1,48 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo/router"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/webstd/http",
+  "unmbt/webstd/url",
+}
+
+// Values
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror RouteConflict {
+  DuplicateRoute(meth~ : @http.Method, path~ : String)
+  AmbiguousParam(path~ : String, existing~ : String, incoming~ : String)
+  InvalidPattern(pattern~ : String, reason~ : String)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct RouteMatch[T] {
+  value : T
+  params : RouteParams
+  pattern : String
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct RouteParams {
+  values : Array[(String, String)]
+}
+pub fn RouteParams::RouteParams(values? : Array[(String, String)]) -> Self
+pub fn RouteParams::entries(Self) -> Array[(String, String)]
+pub fn RouteParams::get(Self, StringView) -> String?
+
+pub struct Router[T] {
+  // private fields
+}
+pub fn[T] Router::Router() -> Self[T]
+pub fn[T] Router::add(Self[T], @http.Method, StringView, T) -> Unit raise RouteConflict
+pub fn[T] Router::allowed_methods(Self[T], StringView) -> Array[@http.Method]
+pub fn[T] Router::match_route(Self[T], @http.Method, StringView) -> RouteMatch[T]? raise @url.UrlError
+pub fn[T] Router::routes(Self[T]) -> Array[(@http.Method, String)]
+
+// Type aliases
+
+// Traits

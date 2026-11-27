@@ -1,0 +1,61 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/webstd"
+
+import {
+  "unmbt/webstd/http",
+  "unmbt/webstd/url",
+}
+
+// Values
+pub fn decode_query_component(StringView) -> String raise @url.UrlError
+
+pub fn encode_query_component(StringView) -> String
+
+pub fn format_set_cookie(StringView, StringView, options? : @http.CookieOptions) -> String
+
+pub fn parse_cookies(StringView) -> Map[String, String]
+
+pub fn percent_decode(StringView) -> String raise @url.UrlError
+
+pub fn percent_encode(StringView) -> String
+
+pub fn status_reason(Int32) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @http {type Body}
+
+pub using @http {type ByteStream}
+
+pub using @http {type Cookie}
+
+pub using @http {type CookieOptions}
+
+pub using @http {type Headers}
+
+pub using @http {type Method}
+
+pub using @http {type NdjsonDecoder}
+
+pub using @http {type Request}
+
+pub using @http {type Response}
+
+pub using @http {type SameSite}
+
+pub using @http {type SseDecoder}
+
+pub using @http {type SseEvent}
+
+pub using @http {type StreamError}
+
+pub using @http {type TypedSseEvent}
+
+pub using @url {type Url}
+
+pub using @url {type UrlError}
+
+// Traits

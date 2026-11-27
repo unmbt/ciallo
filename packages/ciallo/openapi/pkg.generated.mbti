@@ -1,0 +1,78 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo/openapi"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/schema",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn build_document(OpenApiInfo, Array[OperationSpec]) -> OpenApiDocument raise OpenApiError
+
+pub fn scalar_html(title~ : String, spec_url? : String, script_url? : String, custom_css? : String) -> String
+
+pub fn schema_to_json(@schema.SchemaNode) -> @json.Json
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror OpenApiError {
+  DuplicateOperationId(operation_id~ : String, first_route~ : String, second_route~ : String)
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub struct OpenApiDocument {
+  info : OpenApiInfo
+  operations : Array[OperationSpec]
+}
+pub fn OpenApiDocument::to_json(Self) -> @json.Json
+
+#derive(Eq, @debug.Debug)
+pub(all) struct OpenApiInfo {
+  title : String
+  version : String
+  description : String?
+}
+pub fn OpenApiInfo::OpenApiInfo(title~ : String, version~ : String, description? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct OperationSpec {
+  operation_id : String?
+  meth : @http.Method
+  path : String
+  summary : String?
+  description : String?
+  tags : Array[String]
+  deprecated : Bool
+  params_schema : @schema.SchemaNode?
+  query_schema : @schema.SchemaNode?
+  body_schema : @schema.SchemaNode?
+  responses : Array[ResponseSpec]
+  bearer_auth : Bool
+}
+pub fn OperationSpec::OperationSpec(meth~ : @http.Method, path~ : String, operation_id? : String, summary? : String, description? : String, tags? : Array[String], deprecated? : Bool, params_schema? : @schema.SchemaNode, query_schema? : @schema.SchemaNode, body_schema? : @schema.SchemaNode, responses? : Array[ResponseSpec], bearer_auth? : Bool) -> Self
+
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) enum ResponseKind {
+  Json(@schema.SchemaNode)
+  Empty
+  Sse(data_schema~ : @schema.SchemaNode, event_schemas~ : Map[String, @schema.SchemaNode]?)
+  Ndjson(item_schema~ : @schema.SchemaNode)
+  Raw(content_type~ : String)
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ResponseSpec {
+  status : Int32
+  description : String
+  kind : ResponseKind
+}
+pub fn ResponseSpec::ResponseSpec(status~ : Int32, description~ : String, kind? : ResponseKind) -> Self
+
+// Type aliases
+
+// Traits

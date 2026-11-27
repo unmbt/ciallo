@@ -1,0 +1,17 @@
+import {
+  "moonbitlang/core/buffer",
+  "moonbitlang/core/encoding/utf8",
+  "moonbitlang/core/json",
+  "moonbitlang/core/string",
+  "unmbt/webstd/url",
+}
+
+#cfg(not(target = "wasm-gc"))
+import {
+  "moonbitlang/core/async",
+} for "test"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+  targets: { "stream_async_test.mbt": [ "native", "js", "wasm" ] },
+)

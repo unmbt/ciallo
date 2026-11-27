@@ -7,7 +7,7 @@
 - **`packages/webstd`（`unmbt/webstd` · Tier 0）**：完全独立发版的 **WinterTC / ECMA-429 Web 标准纯核模块**（生产代码零外部依赖、零 `core/async*` 依赖、全四目标，内置一等公民结构化 `Cookie`（`max_age : Int64?`，防 CRLF 头注入）、`status_reason`、`UrlError`、`StreamError`、四目标纯同步 `SseDecoder`/`NdjsonDecoder` 与强类型流事件 `TypedSseEvent[T]`；异步流测试通过 `moon.pkg` `#cfg` 仅在三目标运行），供 ciallo 及整个 MoonBit 社区复用；
 - **`packages/ciallo`（`unmbt/ciallo` · Tier 1）**：ciallo 框架主模块，依赖 `unmbt/webstd` 并在根门面 `exports.mbt` 通过 `pub using` 重导出常用 `@webstd` 原语，内建 9 阶段管线（路由匹配严格锚定在阶段 1 `Request` 与阶段 2 `Parse` 之间，组装期可变、首次 `fetch` 拍平冻结）、词法注册快照作用域与 `use_plugin` 深拷贝六项合并法则、统一组装期受检错误 `AppBuildError`、强类型 `ContextKey[T]`（支持定义期绑定缺失状态码）、`EnvBuilder` + 纯只读 `Env`、`*_typed` / `*_sse_typed` / `*_ndjson_typed` 强类型路由（配套 `RouteOptions::with_query` / `with_params` 锚点糖与 Query 缓存复用）、`NoContent`（`204`）哨兵、一等公民 `Nullable[T]`（打通 `PATCH` 三态）与 `Base64Bytes`、防递归爆栈 `SchemaRef`、`Int64String` 字符串契约、`contains_dynamic_or_sensitive` + `schema_id` O(1) 双轨脱敏、手写 RFC 9457 `ProblemDetails`（顶层扩展扁平化 + `HttpError` `#callsite` 源码定位）、统一 `Page[T]`/`CursorPage[T]`、OpenAPI 3.1（`ResponseKind` + `x-ciallo-eden`）+ 可离线 Scalar UI、有界队列取消安全 SSE 心跳、W3C `traceparent` 与 `Lifecycle` / `CapabilityBundle` 协议；
 - **`packages/adapter-native`（`unmbt/ciallo-native` · Tier 1）** 与 **`packages/adapter-js`（`unmbt/ciallo-js` · Tier 1）**：按部署平台物理拆分的独立适配器模块，彻底隔离 `core/async/http` + `core/async/signal`（纯 `native` 目标：1:1 零重解析 `Cookie` 桥接、`install_signal_handlers` 开关、`idle_conns` Keep-Alive 空闲连接毫秒级唤醒 + 子协程独立超时优雅排空、早退未读 Body 强制断连防 DoS、UTF-8 精确 `Content-Length` 与 `public_origin`/`trust_proxy` URL 补全）与 `core/async/js_async`（FFI 边界统一使用 `FixedArray` / `Bytes` 规避 `Array` 弃用告警，配合部署入口 `pkgtype(kind: "foreign_library")` + `#export_name("fetch")` + 2 行 `worker.mjs` 薄胶水）；
-- **`packages/gen`（`unmbt/ciallo-gen` · Tier 2）** 与 **`packages/testing`（`unmbt/ciallo-testing` · Tier 1）**：`v0.1` 随主线落地的统一构建期代码生成器（编译 `wasm` 经标准库 `core/async/fs` + `core/env` 在 `moonrun` / `moonx` 下跨平台免安装执行，仓库内部与外部下游采用同名双模 `rule` + `dev_build`：`#ciallo.schema` 双拼写识别 `Int32|Int`、`UInt32|UInt`、`T?|Option[T]` 并委托 `@schema.schema_ref_of` 消解类型 + 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TypeScript 双端 RPC SDK；允许引入官方 `moonbitlang/parser`；`wire` 编译期 DI 与 `#orm.*`/`migrate` 在 `v0.2` 扩展）与测试工具包（流式 `TestClient` + `sync_openapi` 快照防漂移 + Cookie Jar/Bearer 注入 + Mock 套件）；
+- **`packages/gen`（`unmbt/ciallo-gen` · Tier 2）** 与 **`packages/testing`（`unmbt/ciallo-testing` · Tier 1）**：`v0.1` 随主线落地的统一构建期代码生成器（编译 `wasm` 经标准库 `core/async/fs` + `core/env` 在 `moonrun` / `moonx` 下跨平台免安装执行，仓库内部与外部下游采用同名双模 `rule` + `dev_build`：`#ciallo.schema` 严格识别 `moon fmt`/`moon fix` 规范拼写 `Int32`/`UInt32`/`T?` 并委托 `@schema.schema_ref_of` 消解类型，遇旧写法 `Int`/`UInt`/`Option[T]` 输出行号诊断 + 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TypeScript 双端 RPC SDK；`wire` 编译期 DI 与 `#orm.*`/`migrate` 在 `v0.2` 扩展）与测试工具包（流式 `TestClient` + `sync_openapi` 快照防漂移 + Cookie Jar/Bearer 注入 + Mock 套件）；
 - **`packages/{data-core,orm,migrate,redis}`（`v0.2` 全栈数据闭环，详见 [ADR-006](../decisions/006-data-suite-orm-redis-mongodb.md)、[ADR-009](../decisions/009-phased-release-cadence-v01-v03-and-incubation.md) ~ [ADR-012](../decisions/012-int32-nullable-cancel-safety-and-v01-slimming.md) 与 [data-suite-contracts.md](data-suite-contracts.md)）**：聚焦 PostgreSQL + SQLite/D1 ORM（纯核 + 独立驱动桥接包）、`ciallo-migrate` 迁移工具、纯独立 `ciallo-redis`（无状态纯值 `RedisKey[K, V]`，`SingleFlight` 下沉 `RedisClient`；Web 桥接拆为 `ciallo-redis-plugin`）、ORM 事务回滚测试，以及后移至此阶段的 `ciallo-gen wire` 编译期 DI 与动态稀疏投影 `FieldMask`，**绝不反向污染 `unmbt/webstd` 与 `unmbt/ciallo`**；
 - **`packages/{kit-*,mcp,adapter-wasi}`（`v0.3` 企业级工具箱与 AI-Native 生态，详见 [ADR-008](../decisions/008-compile-time-di-lifecycle-bundles-and-enterprise-kit.md)）**：按需 Tree-shake 微包集群（`config`/`problem`/`log`/`id`/`security`/`resilience`/`actuator`/`otel`/`queue`，分页契约 `Page[T]`/`CursorPage[T]` 已前置统一在 `unmbt/ciallo/schema`）与路由即 MCP Server 适配器 `unmbt/ciallo-mcp`；`unmbt/ciallo-mongo` 与 MySQL 方言归入独立孵化轨道；
 - **`examples/*`**：全部标记 `private = true`，统一由 `moon.work` 纳入类型检查与测试，并由 `moonset` 自动跳过发版；所有公开模块发版均配套包级 **`SKILL.md`**。
@@ -72,7 +72,7 @@ ciallo/                               # [Workspace Root] moon.work + .changeset/
 │   │   └── js_test.mbt               # 基于 Node 18+ 原生全局 Request/Response/ReadableStream 测试
 │   ├── gen/                          # [Module 5 · 统一构建期代码生成器 · Tier 2] name = "unmbt/ciallo-gen" (+ SKILL.md)
 │   │   ├── moon.mod                  # 支持 wasm(供 moonx 跨平台运行) + native，基于 core/async/fs + core/env + moonbitlang/parser
-│   │   ├── cmd/ciallo-gen/           # pkgtype(kind: "executable")，v0.1 提供 schema(双拼写兼容) + eden；v0.2 增 wire / orm / migrate
+│   │   ├── cmd/ciallo-gen/           # pkgtype(kind: "executable")，v0.1 提供 schema(严格规范拼写) + eden；v0.2 增 wire / orm / migrate
 │   │   └── ...
 │   └── testing/                      # [Module 6 · 研发与测试工具包 · Tier 1] name = "unmbt/ciallo-testing" (+ SKILL.md)
 │       ├── moon.mod                  # import { "unmbt/webstd@0.1.0", "unmbt/ciallo@0.1.0" }
@@ -890,9 +890,9 @@ impl Schema with fn contains_dynamic_or_sensitive(_proxy : Self?) -> Bool {
   false
 }
 
-/// 供业务与 ciallo-gen 生成代码以 @schema.schema_ref_of((None : FieldType?)) 零反射委托给 mooonc 消解类型
-declare pub fn[T : Schema] schema_of(_proxy? : T?) -> SchemaNode
-declare pub fn[T : Schema] schema_ref_of(_proxy? : T?) -> SchemaNode
+/// 供业务与 ciallo-gen 生成代码以 @schema.schema_ref_of((None : FieldType?)) 零反射委托给 moonc 消解类型
+declare pub fn[T : Schema] schema_of(_proxy : T?) -> SchemaNode
+declare pub fn[T : Schema] schema_ref_of(_proxy : T?) -> SchemaNode
 
 /// 全量内置基础类型与泛型容器 Schema 实现（注意：严禁为通用 T? 与裸 Bytes 实现 Schema，详见 ADR-012！）
 declare pub impl Schema for Bool
@@ -1179,7 +1179,7 @@ declare pub impl Clock for FixedClock
 ```moonbit
 /// 统一应用组装期受检异常（覆盖路由冲突、重复依赖注册、重复 operation_id 与运行期冻结后篡改）
 #non_exhaustive
-#derive(Debug, Eq)
+#derive(Debug)
 pub(all) suberror AppBuildError {
   DuplicateRoute(meth~ : @http.Method, path~ : String, loc~ : SourceLoc?)
   AmbiguousParam(path~ : String, existing~ : String, incoming~ : String, loc~ : SourceLoc?)
@@ -1188,6 +1188,8 @@ pub(all) suberror AppBuildError {
   DuplicateOperationId(operation_id~ : String, routes~ : (String, String))
   AlreadyFrozen(loc~ : SourceLoc?)
 }
+
+declare pub impl Eq for AppBuildError
 
 #non_exhaustive
 pub(all) suberror HttpError {
@@ -1233,6 +1235,12 @@ pub fn HttpError::unauthorized(detail : String, loc~ : SourceLoc) -> HttpError {
 pub fn HttpError::forbidden(detail : String, loc~ : SourceLoc) -> HttpError { ... }
 #callsite(autofill(loc))
 pub fn HttpError::not_found(detail : String, loc~ : SourceLoc) -> HttpError { ... }
+#callsite(autofill(loc))
+pub fn HttpError::method_not_allowed(allowed : Array[@http.Method], loc~ : SourceLoc) -> HttpError { ... }
+#callsite(autofill(loc))
+pub fn HttpError::payload_too_large(max_bytes : Int64, loc~ : SourceLoc) -> HttpError { ... }
+#callsite(autofill(loc))
+pub fn HttpError::unsupported_media_type(detail : String, loc~ : SourceLoc) -> HttpError { ... }
 #callsite(autofill(loc))
 pub fn HttpError::unprocessable(issues : Array[@schema.ValidationIssue], loc~ : SourceLoc) -> HttpError { ... }
 #callsite(autofill(loc))
@@ -1688,7 +1696,7 @@ declare pub fn to_fetch_handler(
     ```
     生成产物 `*.gen.mbt` 提交入库并由 CI 执行 `--check` 校验无漂移（下游 `moon add` 依赖包时绝不触发 `dev_build`）。
 - **核心子命令与 AST 边界策略**：
-  - **`ciallo-gen schema`（`v0.1`）**：`v0.1` 锁定支持 `struct`（含泛型）、Newtype 与纯无载荷 `enum`（对齐默认 `#derive(ToJson)` 纯字符串编码；遇到带载荷 ADT `enum` 时输出带源码行号的清晰诊断引导手写 `Schema`，自动推导延后至 `v0.1.x`）。**AST 扫描器强制双拼写兼容**：同时将 `Int32 | Int`、`UInt32 | UInt` 识别为 32 位有符号/无符号整数；对结构体直接字段同时识别后缀 `T?` 与显式 `Option[T]`，剥离外层可选包装生成 `ObjectField(required=false)` + 内部 `@schema.schema_ref_of((None : T?))`（严格对齐 `T | undefined`；配合 `Nullable[T]?` 原生表达 `PATCH` 三态）。
+  - **`ciallo-gen schema`（`v0.1`）**：`v0.1` 锁定支持 `struct`（含泛型）、Newtype 与纯无载荷 `enum`（对齐默认 `#derive(ToJson)` 纯字符串编码；遇到带载荷 ADT `enum` 时输出带源码行号的清晰诊断引导手写 `Schema`，自动推导延后至 `v0.1.x`）。**严格单一规范拼写（ADR-013）**：仅接受 `moon fmt` / `moon fix` 后的规范拼写 `Int32`、`UInt32` 与后缀 `T?`（遇旧写法 `Int`、`UInt` 或 `Option[T]` 直接输出带源码行号的诊断错误提示先格式化）；对结构体直接字段剥离外层 `T?` 生成 `ObjectField(required=false)` + 内部 `@schema.schema_ref_of((None : T?))`（严格对齐 `T | undefined`；配合 `Nullable[T]?` 原生表达 `PATCH` 三态）。
   - **`ciallo-gen eden --from openapi.json`（`v0.1`）**：配合 `@ciallo_testing.sync_openapi` 测试快照闭环，统一消费应用导出的 `openapi.json`（含 `#/components/schemas/`、`operationId`、`ResponseKind` 流式契约与 `x-ciallo-eden` 扩展），同时导出：① **强类型 MoonBit RPC SDK**；② **零依赖 TypeScript SDK（`.ts` + `.d.ts`）**（`NoContent` 映射为 `Promise<void>`，`Int64String` 严格映射为 `string`，`Nullable[T]` 映射为 `T | null`，可选字段 `T?` 映射为 `field?: T`，SSE/NDJSON 生成强类型 `AsyncGenerator<Frame>`，含全分支错误联合类型与 `--check` 漂移门禁）。
   - **`ciallo-gen wire` / `ciallo-gen orm` / `ciallo-gen migrate`（`v0.2`）**：编译期 DI `wire`（按包目录字典序扫描 `#ciallo.provider`，静态校验依赖 DAG）随多层数据组件在 `v0.2` 一并交付；同时解析 `#orm.*`/`#orm.sql` 生成 `*.orm.gen.mbt`（含包内 `UserQueries[E]`），并提供数据库迁移 `diff` / `status` / `apply` / `verify` / `seed`。
 

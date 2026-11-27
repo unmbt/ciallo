@@ -1,0 +1,176 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/webstd/http"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/webstd/url",
+}
+
+// Values
+pub fn format_set_cookie(StringView, StringView, options? : CookieOptions) -> String
+
+pub fn parse_cookies(StringView) -> Map[String, String]
+
+pub fn status_reason(Int32) -> String
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror StreamError {
+  StreamReadError(String)
+  StreamAborted(String)
+  PayloadTooLarge(Int64)
+  StreamAlreadyConsumed
+}
+
+// Types and methods
+pub(all) enum Body {
+  Empty
+  Bytes(Bytes)
+  Text(String)
+  Stream(ByteStream)
+}
+pub fn Body::is_empty(Self) -> Bool
+pub async fn Body::read_all_bytes(Self, max_bytes? : Int64) -> Bytes
+pub async fn Body::read_all_text(Self, max_bytes? : Int64) -> String
+
+pub struct ByteStream {
+  next_chunk : async () -> Bytes?
+  cancel : (String) -> Unit
+}
+pub fn ByteStream::ByteStream(next_chunk~ : async () -> Bytes?, cancel? : (String) -> Unit) -> Self
+pub fn ByteStream::from_chunks(Array[Bytes]) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct Cookie {
+  name : String
+  value : String
+  path : String?
+  domain : String?
+  max_age : Int64?
+  expires : String?
+  http_only : Bool
+  secure : Bool
+  same_site : SameSite?
+  partitioned : Bool
+}
+pub fn Cookie::Cookie(String, String, options? : CookieOptions) -> Self
+pub fn Cookie::parse_set_cookie(StringView) -> Self?
+pub fn Cookie::to_set_cookie_header(Self) -> String
+
+#derive(Eq, @debug.Debug)
+pub(all) struct CookieOptions {
+  path : String?
+  domain : String?
+  max_age : Int64?
+  expires : String?
+  http_only : Bool
+  secure : Bool
+  same_site : SameSite?
+  partitioned : Bool
+}
+pub fn CookieOptions::CookieOptions(path? : String, domain? : String, max_age? : Int64, expires? : String, http_only? : Bool, secure? : Bool, same_site? : SameSite, partitioned? : Bool) -> Self
+
+#derive(Eq, @debug.Debug)
+pub struct Headers {
+  // private fields
+}
+pub fn Headers::Headers(entries? : Array[(String, String)]) -> Self
+pub fn Headers::append(Self, StringView, StringView) -> Unit
+pub fn Headers::clone(Self) -> Self
+pub fn Headers::entries(Self) -> Array[(String, String)]
+pub fn Headers::get(Self, StringView) -> String?
+pub fn Headers::get_all(Self, StringView) -> Array[String]
+pub fn Headers::get_set_cookie(Self) -> Array[String]
+pub fn Headers::has(Self, StringView) -> Bool
+pub fn Headers::remove(Self, StringView) -> Unit
+pub fn Headers::set(Self, StringView, StringView) -> Unit
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) enum Method {
+  Get
+  Head
+  Post
+  Put
+  Patch
+  Delete
+  Options
+  Trace
+  Connect
+  Custom(String)
+}
+pub fn Method::as_str(Self) -> String
+pub fn Method::parse(StringView) -> Self
+
+pub struct NdjsonDecoder {
+  // private fields
+}
+pub fn NdjsonDecoder::NdjsonDecoder() -> Self
+pub fn NdjsonDecoder::feed(Self, BytesView) -> Array[@json.Json] raise StreamError
+pub fn NdjsonDecoder::finish(Self) -> Array[@json.Json] raise StreamError
+
+pub(all) struct Request {
+  meth : Method
+  url : @url.Url
+  headers : Headers
+  body : Body
+}
+pub fn Request::Request(meth~ : Method, url~ : StringView, headers? : Headers, body? : Body) -> Self raise @url.UrlError
+pub fn Request::header(Self, StringView) -> String?
+
+pub(all) struct Response {
+  status : Int32
+  headers : Headers
+  cookies : Array[Cookie]
+  body : Body
+  normalized : Bool
+}
+pub fn Response::Response(status? : Int32, headers? : Headers, cookies? : Array[Cookie], body? : Body, normalized? : Bool) -> Self
+pub fn Response::bytes(Bytes, status? : Int32, content_type? : StringView, headers? : Headers) -> Self
+pub fn Response::empty(status? : Int32, headers? : Headers) -> Self
+pub fn Response::json(@json.Json, status? : Int32, headers? : Headers) -> Self
+pub fn Response::ndjson(async () -> @json.Json?, status? : Int32, headers? : Headers) -> Self
+pub fn Response::redirect(StringView, status? : Int32) -> Self
+pub fn Response::set_cookie(Self, Cookie) -> Self
+pub fn Response::sse(ByteStream, status? : Int32, headers? : Headers) -> Self
+pub fn Response::sse_events(async () -> SseEvent?, status? : Int32, headers? : Headers) -> Self
+pub fn Response::text(StringView, status? : Int32, headers? : Headers) -> Self
+pub fn Response::with_cookie(Self, StringView, StringView, options? : CookieOptions) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) enum SameSite {
+  Lax
+  Strict
+  None
+}
+
+pub struct SseDecoder {
+  // private fields
+}
+pub fn SseDecoder::SseDecoder() -> Self
+pub fn SseDecoder::feed(Self, BytesView) -> Array[SseEvent]
+pub fn SseDecoder::finish(Self) -> Array[SseEvent]
+
+#derive(Eq, @debug.Debug)
+pub(all) struct SseEvent {
+  id : String?
+  event : String?
+  data : String
+  retry_ms : Int32?
+}
+pub fn SseEvent::SseEvent(data~ : String, id? : String, event? : String, retry_ms? : Int32) -> Self
+pub fn SseEvent::encode(Self) -> Bytes
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TypedSseEvent[T] {
+  id : String?
+  event : String?
+  data : T
+  retry_ms : Int32?
+}
+pub fn[T] TypedSseEvent::TypedSseEvent(data~ : T, id? : String, event? : String, retry_ms? : Int32) -> Self[T]
+
+// Type aliases
+
+// Traits

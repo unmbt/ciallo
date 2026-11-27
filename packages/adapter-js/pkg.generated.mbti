@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-js"
+
+import {
+  "moonbitlang/core/async/js_async",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub fn to_fetch_handler(@core.App, env_mapper? : (JsEnv) -> @runtime.Env) -> (JsRequest, JsEnv, JsExecutionContext) -> @js_async.Promise[JsResponse]
+
+// Errors
+
+// Types and methods
+#external
+pub type JsEnv
+
+#external
+pub type JsExecutionContext
+
+#external
+pub type JsRequest
+
+#external
+pub type JsResponse
+
+// Type aliases
+
+// Traits

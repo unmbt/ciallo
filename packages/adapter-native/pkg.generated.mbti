@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo-native"
+
+import {
+  "moonbitlang/core/debug",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/runtime",
+}
+
+// Values
+pub async fn serve(@core.App, options? : NativeServerOptions, env? : @runtime.Env, on_listen? : (Int32) -> Unit) -> Unit
+
+// Errors
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct NativeServerOptions {
+  host : String
+  port : Int32
+  max_connections : Int32
+  reuse_addr : Bool
+  install_signal_handlers : Bool
+  request_timeout_ms : Int32?
+  shutdown_timeout_ms : Int32
+  public_origin : String?
+  trust_proxy : Bool
+}
+pub fn NativeServerOptions::NativeServerOptions(host? : String, port? : Int32, max_connections? : Int32, reuse_addr? : Bool, install_signal_handlers? : Bool, request_timeout_ms? : Int32, shutdown_timeout_ms? : Int32, public_origin? : String, trust_proxy? : Bool) -> Self
+
+// Type aliases
+
+// Traits

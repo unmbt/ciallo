@@ -1,0 +1,134 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo/runtime"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub fn parse_traceparent(StringView) -> TraceContext?
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror RuntimeError {
+  Unavailable(String)
+  IoFailure(String)
+  Timeout(String)
+}
+
+// Types and methods
+pub struct ContextKey[T] {
+  // private fields
+}
+pub fn[T] ContextKey::ContextKey(String, missing_status? : Int32, missing_detail? : String) -> Self[T]
+pub fn[T] ContextKey::missing_detail(Self[T]) -> String?
+pub fn[T] ContextKey::missing_status(Self[T]) -> Int32
+pub fn[T] ContextKey::name(Self[T]) -> String
+pub fn[T] ContextKey::new(String, missing_status? : Int32, missing_detail? : String) -> Self[T]
+
+pub struct ContextStore {
+  // private fields
+}
+pub fn ContextStore::ContextStore() -> Self
+pub fn ContextStore::clone(Self) -> Self
+pub fn[T] ContextStore::contains(Self, ContextKey[T]) -> Bool
+pub fn[T] ContextStore::get(Self, ContextKey[T]) -> T?
+pub fn ContextStore::merge_from(Self, Self, allow_override? : Bool) -> String?
+pub fn[T] ContextStore::set(Self, ContextKey[T], T) -> Unit
+
+pub struct Env {
+  // private fields
+}
+pub fn Env::Env(vars? : Map[String, String]) -> Self
+pub fn[T] Env::get_binding(Self, ContextKey[T]) -> T?
+pub fn Env::get_var(Self, StringView) -> String?
+pub fn Env::require_var(Self, StringView) -> String raise RuntimeError
+pub fn[T] Env::with_binding(Self, ContextKey[T], T) -> Self
+
+pub struct EnvBuilder {
+  // private fields
+}
+pub fn EnvBuilder::EnvBuilder(vars? : Map[String, String]) -> Self
+pub fn[T] EnvBuilder::bind(Self, ContextKey[T], T) -> Self
+pub fn EnvBuilder::build(Self) -> Env
+pub fn EnvBuilder::set_var(Self, StringView, StringView) -> Self
+
+pub struct ExecutionContext {
+  // private fields
+}
+pub fn ExecutionContext::ExecutionContext(schedule_fn? : (async () -> Unit) -> Unit) -> Self
+pub async fn ExecutionContext::drain_background(Self) -> Unit
+pub fn ExecutionContext::has_scheduler(Self) -> Bool
+pub fn ExecutionContext::wait_until(Self, async () -> Unit) -> Unit
+
+pub struct FixedClock {
+  // private fields
+}
+pub fn FixedClock::FixedClock(start_micros? : Int64, step_micros? : Int64) -> Self
+pub fn FixedClock::advance(Self, Int64) -> Unit
+pub impl Clock for FixedClock
+
+#derive(Eq, @debug.Debug, @json.ToJson)
+pub(all) struct HealthStatus {
+  name : String
+  ok : Bool
+  detail : String?
+  elapsed_micros : Int64
+}
+pub fn HealthStatus::to_json(Self) -> @json.Json
+
+pub struct MemoryKv {
+  // private fields
+}
+pub fn MemoryKv::MemoryKv() -> Self
+pub impl KvStore for MemoryKv
+
+pub struct MockHttpClient {
+  // private fields
+}
+pub fn MockHttpClient::MockHttpClient(async (@http.Request) -> @http.Response raise RuntimeError) -> Self
+pub impl HttpClient for MockHttpClient
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TraceContext {
+  trace_id : String
+  span_id : String
+  parent_span_id : String?
+  sampled : Bool
+  tracestate : String?
+}
+pub fn TraceContext::child_span(Self, &Clock) -> Self
+pub fn TraceContext::new_root(&Clock) -> Self
+pub fn TraceContext::to_traceparent(Self) -> String
+
+// Type aliases
+
+// Traits
+pub(open) trait Clock {
+  fn now_micros(Self) -> Int64
+  fn now_ms(Self) -> Int64 = _
+}
+
+pub(open) trait HealthCheck {
+  fn check_name(Self) -> String
+  async fn check(Self) -> HealthStatus
+}
+
+pub(open) trait HttpClient {
+  async fn send(Self, @http.Request) -> @http.Response raise RuntimeError
+}
+
+pub(open) trait KvStore {
+  async fn get(Self, StringView) -> String? raise RuntimeError
+  async fn put(Self, StringView, StringView, ttl_sec? : Int32) -> Unit raise RuntimeError
+  async fn delete(Self, StringView) -> Unit raise RuntimeError
+}
+
+pub(open) trait Lifecycle {
+  fn lifecycle_name(Self) -> String
+  async fn on_start(Self) -> Unit
+  async fn on_stop(Self) -> Unit
+}

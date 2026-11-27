@@ -1,0 +1,282 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo/core"
+
+import {
+  "moonbitlang/core/debug",
+  "moonbitlang/core/json",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/router",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo/schema",
+  "unmbt/webstd/http",
+}
+
+// Values
+pub let remote_addr_key : @runtime.ContextKey[String]
+
+// Errors
+#non_exhaustive
+#derive(@debug.Debug)
+pub(all) suberror AppBuildError {
+  DuplicateRoute(meth~ : @http.Method, path~ : String, loc~ : SourceLoc?)
+  AmbiguousParam(path~ : String, existing~ : String, incoming~ : String, loc~ : SourceLoc?)
+  InvalidPattern(pattern~ : String, reason~ : String, loc~ : SourceLoc?)
+  DuplicateProvider(key_name~ : String, loc~ : SourceLoc?)
+  DuplicateOperationId(operation_id~ : String, routes~ : (String, String))
+  AlreadyFrozen(loc~ : SourceLoc?)
+}
+pub impl Eq for AppBuildError
+
+#non_exhaustive
+pub(all) suberror HttpError {
+  BadRequest(String, loc~ : SourceLoc?)
+  Unauthorized(String, loc~ : SourceLoc?)
+  Forbidden(String, loc~ : SourceLoc?)
+  NotFound(String, loc~ : SourceLoc?)
+  MethodNotAllowed(Array[@http.Method], loc~ : SourceLoc?)
+  PayloadTooLarge(Int64, loc~ : SourceLoc?)
+  UnsupportedMediaType(String, loc~ : SourceLoc?)
+  UnprocessableEntity(Array[@schema.ValidationIssue], loc~ : SourceLoc?)
+  TooManyRequests(String, loc~ : SourceLoc?)
+  InternalError(String, loc~ : SourceLoc?)
+  Custom(status~ : Int32, code~ : String, message~ : String, extensions~ : Map[String, @json.Json]?, loc~ : SourceLoc?)
+}
+#callsite(autofill(loc))
+pub fn HttpError::bad_request(String, loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::custom(status~ : Int32, code~ : String, message~ : String, extensions? : Map[String, @json.Json], loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::forbidden(String, loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::internal(String, loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::method_not_allowed(Array[@http.Method], loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::not_found(String, loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::payload_too_large(Int64, loc~ : SourceLoc) -> Self
+pub fn HttpError::to_problem(Self, trace_id? : String, instance? : String, debug? : Bool) -> ProblemDetails
+pub fn HttpError::to_response(Self, trace_id? : String, instance? : String, debug? : Bool) -> @http.Response
+#callsite(autofill(loc))
+pub fn HttpError::too_many_requests(String, loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::unauthorized(String, loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::unprocessable(Array[@schema.ValidationIssue], loc~ : SourceLoc) -> Self
+#callsite(autofill(loc))
+pub fn HttpError::unsupported_media_type(String, loc~ : SourceLoc) -> Self
+
+// Types and methods
+pub struct App {
+  // private fields
+}
+pub fn App::App(prefix? : String, options? : AppOptions, clock? : &@runtime.Clock) -> Self
+pub fn App::delete(Self, StringView, options? : RouteOptions, async (Context) -> @http.Response) -> Self raise AppBuildError
+pub fn[Resp : @json.ToJson + @schema.Schema] App::delete_typed(Self, StringView, status? : Int32, options? : RouteOptions, async (Context) -> Resp) -> Self raise AppBuildError
+pub async fn App::fetch(Self, @http.Request, env? : @runtime.Env, exec_ctx? : @runtime.ExecutionContext) -> @http.Response
+pub fn App::freeze(Self) -> Self
+pub fn App::get(Self, StringView, options? : RouteOptions, async (Context) -> @http.Response) -> Self raise AppBuildError
+pub fn[Frame : @json.ToJson + @schema.Schema] App::get_sse_typed(Self, StringView, options? : RouteOptions, async (Context) -> (async () -> @http.TypedSseEvent[Frame]?)) -> Self raise AppBuildError
+pub fn[Resp : @json.ToJson + @schema.Schema] App::get_typed(Self, StringView, status? : Int32, options? : RouteOptions, async (Context) -> Resp) -> Self raise AppBuildError
+pub fn App::guard_group(Self, prefix? : String, before_handle? : Array[async (Context) -> @http.Response?], params_schema? : @schema.SchemaNode, query_schema? : @schema.SchemaNode, bearer_auth? : Bool, (Self) -> Unit raise AppBuildError) -> Self raise AppBuildError
+pub fn App::health_checks(Self) -> Array[&@runtime.HealthCheck]
+pub fn App::on_after_handle(Self, scope? : Scope, async (Context, @http.Response) -> @http.Response) -> Self raise AppBuildError
+pub fn App::on_after_response(Self, scope? : Scope, async (Context, @http.Response) -> Unit) -> Self raise AppBuildError
+pub fn App::on_before_handle(Self, scope? : Scope, async (Context) -> @http.Response?) -> Self raise AppBuildError
+pub fn App::on_error(Self, scope? : Scope, async (Context, Error) -> @http.Response?) -> Self raise AppBuildError
+pub fn App::on_map_response(Self, scope? : Scope, async (Context, @http.Response) -> @http.Response) -> Self raise AppBuildError
+pub fn App::on_parse(Self, scope? : Scope, async (Context) -> Unit) -> Self raise AppBuildError
+pub fn App::on_request(Self, async (Context) -> @http.Response?) -> Self raise AppBuildError
+pub fn App::on_trace(Self, scope? : Scope, (TraceSummary) -> Unit) -> Self raise AppBuildError
+pub fn App::on_transform(Self, scope? : Scope, async (Context) -> Unit) -> Self raise AppBuildError
+pub fn App::openapi_document(Self, @openapi.OpenApiInfo) -> @openapi.OpenApiDocument raise AppBuildError
+pub fn App::patch(Self, StringView, options? : RouteOptions, async (Context) -> @http.Response) -> Self raise AppBuildError
+pub fn[Req : @json.FromJson + @schema.Schema, Resp : @json.ToJson + @schema.Schema] App::patch_typed(Self, StringView, status? : Int32, options? : RouteOptions, async (Context, Req) -> Resp) -> Self raise AppBuildError
+pub fn App::post(Self, StringView, options? : RouteOptions, async (Context) -> @http.Response) -> Self raise AppBuildError
+pub fn[Req : @json.FromJson + @schema.Schema, Item : @json.ToJson + @schema.Schema] App::post_ndjson_typed(Self, StringView, options? : RouteOptions, async (Context, Req) -> (async () -> Item?)) -> Self raise AppBuildError
+pub fn[Req : @json.FromJson + @schema.Schema, Frame : @json.ToJson + @schema.Schema] App::post_sse_typed(Self, StringView, options? : RouteOptions, async (Context, Req) -> (async () -> @http.TypedSseEvent[Frame]?)) -> Self raise AppBuildError
+pub fn[Req : @json.FromJson + @schema.Schema, Resp : @json.ToJson + @schema.Schema] App::post_typed(Self, StringView, status? : Int32, options? : RouteOptions, async (Context, Req) -> Resp) -> Self raise AppBuildError
+pub fn[T] App::provide(Self, @runtime.ContextKey[T], T, allow_override? : Bool) -> Self raise AppBuildError
+pub fn App::put(Self, StringView, options? : RouteOptions, async (Context) -> @http.Response) -> Self raise AppBuildError
+pub fn[Req : @json.FromJson + @schema.Schema, Resp : @json.ToJson + @schema.Schema] App::put_typed(Self, StringView, status? : Int32, options? : RouteOptions, async (Context, Req) -> Resp) -> Self raise AppBuildError
+pub fn App::register_health_check(Self, &@runtime.HealthCheck) -> Self raise AppBuildError
+pub fn App::register_lifecycle(Self, &@runtime.Lifecycle) -> Self raise AppBuildError
+pub fn App::route(Self, @http.Method, StringView, options? : RouteOptions, async (Context) -> @http.Response) -> Self raise AppBuildError
+pub async fn App::start_lifecycles(Self) -> Unit
+pub async fn App::stop_lifecycles(Self) -> Unit
+pub fn App::use_bundle(Self, &CapabilityBundle) -> Self raise AppBuildError
+pub fn App::use_plugin(Self, meta? : PluginMeta, Self) -> Self raise AppBuildError
+
+#derive(Eq, @debug.Debug)
+pub(all) struct AppOptions {
+  prefix : String?
+  debug : Bool
+  default_max_body_bytes : Int64
+  strict_trailing_slash_redirect : Bool
+  default_sse_heartbeat_ms : Int32?
+}
+pub fn AppOptions::AppOptions(prefix? : String, debug? : Bool, default_max_body_bytes? : Int64, strict_trailing_slash_redirect? : Bool, default_sse_heartbeat_ms? : Int32?) -> Self
+
+pub struct Context {
+  // private fields
+}
+pub fn Context::append_header(Self, StringView, StringView) -> Unit
+pub async fn Context::bytes(Self, max_bytes? : Int64) -> Bytes
+pub fn Context::cookie(Self, StringView) -> String?
+pub fn Context::cookies(Self) -> Map[String, String]
+pub fn[T : @json.ToJson + @schema.Schema] Context::created(Self, T) -> @http.Response
+pub fn[T : @json.FromJson] Context::decode_json(Self, @json.Json) -> T raise HttpError
+pub fn Context::delete_cookie(Self, StringView, path? : String, domain? : String) -> Unit
+pub fn Context::env(Self) -> @runtime.Env
+pub fn Context::exec_ctx(Self) -> @runtime.ExecutionContext
+pub fn[T] Context::get(Self, @runtime.ContextKey[T]) -> T?
+pub fn[T] Context::get_state(Self, @runtime.ContextKey[T]) -> T?
+pub fn Context::header(Self, StringView) -> String?
+pub async fn Context::json(Self, max_bytes? : Int64) -> @json.Json
+pub async fn[T : @json.FromJson + @schema.Schema] Context::json_as(Self, max_bytes? : Int64) -> T
+pub fn Context::json_response(Self, @json.Json, status? : Int32) -> @http.Response
+pub fn Context::ndjson(Self, async () -> @json.Json?) -> @http.Response
+pub fn Context::no_content(Self) -> @http.Response
+pub fn[T : @json.ToJson + @schema.Schema] Context::ok(Self, T) -> @http.Response
+pub fn Context::param(Self, StringView) -> String?
+pub fn[T : FromParam] Context::param_as(Self, StringView) -> T raise @schema.ValidationError
+pub fn Context::params(Self) -> @router.RouteParams
+pub fn Context::queries(Self) -> Map[String, Array[String]] raise HttpError
+pub fn Context::query(Self, StringView) -> String? raise HttpError
+pub fn[T : @json.FromJson + @schema.Schema] Context::query_as(Self) -> T raise
+pub fn Context::remove_header(Self, StringView) -> Unit
+pub fn Context::request(Self) -> @http.Request
+pub fn[T] Context::require(Self, @runtime.ContextKey[T]) -> T raise HttpError
+pub fn[T] Context::set(Self, @runtime.ContextKey[T], T) -> Unit
+pub fn Context::set_cookie(Self, @http.Cookie) -> Unit
+pub fn Context::set_header(Self, StringView, StringView) -> Unit
+pub fn Context::sse_events(Self, async () -> @http.SseEvent?) -> @http.Response
+pub fn[T] Context::state(Self, @runtime.ContextKey[T]) -> T raise HttpError
+pub fn Context::status(Self, Int32) -> Unit
+pub async fn Context::text(Self, max_bytes? : Int64) -> String
+pub fn Context::text_response(Self, StringView, status? : Int32) -> @http.Response
+pub fn Context::trace_ctx(Self) -> @runtime.TraceContext
+pub fn Context::trace_id(Self) -> String
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) enum LifecyclePhase {
+  Request
+  Parse
+  Transform
+  BeforeHandle
+  Handle
+  AfterHandle
+  MapResponse
+  AfterResponse
+  OnError
+}
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) struct PluginMeta {
+  name : String
+  seed : String?
+}
+pub fn PluginMeta::PluginMeta(name~ : String, seed? : String) -> Self
+
+#derive(Eq, @debug.Debug)
+pub(all) struct ProblemDetails {
+  type_uri : String
+  title : String
+  status : Int32
+  detail : String
+  instance : String?
+  code : String
+  trace_id : String?
+  errors : Array[@schema.ValidationIssue]?
+  source_loc : String?
+  extensions : Map[String, @json.Json]
+}
+pub fn ProblemDetails::to_json(Self) -> @json.Json
+pub impl @json.FromJson for ProblemDetails
+pub impl @json.ToJson for ProblemDetails
+
+pub(all) struct RouteOptions {
+  operation_id : String?
+  status : Int32?
+  summary : String?
+  description : String?
+  tags : Array[String]
+  deprecated : Bool
+  max_body_bytes : Int64?
+  sse_heartbeat_ms : Int32?
+  params_schema : @schema.SchemaNode?
+  query_schema : @schema.SchemaNode?
+  body_schema : @schema.SchemaNode?
+  response_schema : @schema.SchemaNode?
+  response_kind : @openapi.ResponseKind?
+  error_responses : Array[@openapi.ResponseSpec]
+  bearer_auth : Bool
+  before_handle : Array[async (Context) -> @http.Response?]
+  after_handle : Array[async (Context, @http.Response) -> @http.Response]
+}
+pub fn RouteOptions::RouteOptions(operation_id? : String, status? : Int32, summary? : String, description? : String, tags? : Array[String], deprecated? : Bool, max_body_bytes? : Int64, sse_heartbeat_ms? : Int32, params_schema? : @schema.SchemaNode, query_schema? : @schema.SchemaNode, body_schema? : @schema.SchemaNode, response_schema? : @schema.SchemaNode, response_kind? : @openapi.ResponseKind, error_responses? : Array[@openapi.ResponseSpec], bearer_auth? : Bool, before_handle? : Array[async (Context) -> @http.Response?], after_handle? : Array[async (Context, @http.Response) -> @http.Response]) -> Self
+pub fn[P : @schema.Schema] RouteOptions::with_params(Self, P?) -> Self
+pub fn[Q : @schema.Schema] RouteOptions::with_query(Self, Q?) -> Self
+
+#derive(Eq, Hash, @debug.Debug)
+pub(all) enum Scope {
+  Local
+  Scoped
+  Global
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TraceEvent {
+  phase : LifecyclePhase
+  start_micros : Int64
+  end_micros : Int64
+  duration_micros : Int64
+}
+
+#derive(Eq, @debug.Debug)
+pub(all) struct TraceSummary {
+  meth : @http.Method
+  path : String
+  pattern : String?
+  status : Int32
+  total_micros : Int64
+  events : Array[TraceEvent]
+}
+
+// Type aliases
+pub type ContextHook = async (Context) -> Unit
+
+pub type EarlyHook = async (Context) -> @http.Response?
+
+pub type ErrorMapper = async (Context, Error) -> @http.Response?
+
+pub type Handler = async (Context) -> @http.Response
+
+pub type ResponseHook = async (Context, @http.Response) -> @http.Response
+
+pub type TraceListener = (TraceSummary) -> Unit
+
+// Traits
+pub(open) trait CapabilityBundle {
+  fn meta(Self) -> PluginMeta
+  fn install(Self, App) -> Unit raise AppBuildError
+}
+
+pub(open) trait FromParam {
+  fn from_param(String, StringView) -> Self raise @schema.ValidationError
+}
+pub impl FromParam for Bool
+pub impl FromParam for Int32
+pub impl FromParam for Int64
+pub impl FromParam for UInt32
+pub impl FromParam for UInt64
+pub impl FromParam for String
+
+pub(open) trait IntoResponse {
+  fn into_response(Self) -> @http.Response
+}
+pub impl IntoResponse for String
+pub impl IntoResponse for Bytes
+pub impl IntoResponse for @json.Json
+pub impl IntoResponse for @schema.NoContent
+pub impl IntoResponse for @http.Response

@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "baseBranch": "master",
+  "access": "public",
+  "updateInternalDependencies": "patch",
+  "updateInternalDependents": "out-of-range",
+  "linked": [
+    [
+      "unmbt/ciallo",
+      "unmbt/ciallo-native",
+      "unmbt/ciallo-js",
+      "unmbt/ciallo-gen",
+      "unmbt/ciallo-testing"
+    ]
+  ],
+  "privatePackages": {
+    "version": false,
+    "tag": false,
+    "publish": false
+  },
+  "changelog": {
+    "generator": "github",
+    "options": {
+      "repo": "unmbt/ciallo",
+      "disableThanks": false
+    }
+  },
+  "tag": {
+    "create": true,
+    "afterPublish": true,
+    "format": "auto",
+    "push": false
+  },
+  "publisher": {
+    "kind": "moon",
+    "registry": "default",
+    "dryRunFirst": true
+  }
+}

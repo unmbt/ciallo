@@ -16,3 +16,4 @@ ADR 文件记录影响多个模块或开发阶段的关键架构决策。修改�
 | [ADR-010](010-phase0-precheck-resolutions.md) | Phase 0 预检拍板：`ContextKey[T]`、`webstd` 异步测试分层、强类型路由契约、`moonx`/`dev_build`、优雅排空与 `Scope` 快照语义 | Accepted |
 | [ADR-011](011-v1-rc1-alignment-and-contract-hardening.md) | MoonBit `v1.0.0-rc1` 深度对齐：一等公民 `Cookie`、Keep-Alive 空闲断连排空、`NoContent`/`ResponseKind`/`SchemaRef` 契约完备化与 `Int64`/`@async.Cond` 四大防线 | Accepted |
 | [ADR-012](012-int32-nullable-cancel-safety-and-v01-slimming.md) | `Int32`/`UInt32` 规范名对齐、`Nullable[T]`/`Base64Bytes` 线格式收口、子协程取消安全防线、`AppBuildError`/只读 `Env` 与 `v0.1` 聚焦瘦身 | Accepted |
+| [ADR-013](013-canonical-spelling-only-and-http-error-helpers.md) | 严格统一规范类型拼写（废除 `Int`/`UInt`/`Option[T]` 旧拼写双拼写兼容）与补齐 `HttpError` 11 个 `#callsite` 构造辅助函数 | Accepted |

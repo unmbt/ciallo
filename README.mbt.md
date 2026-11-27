@@ -12,7 +12,7 @@ A WinterTC-inspired, cross-runtime, full-stack Web framework for MoonBit — pla
 
 <br/>
 
-![Status](https://img.shields.io/badge/status-Phase%200%20%C2%B7%20SDD%20Spec%20Ready-FF6B9D?style=flat-square)
+![Status](https://img.shields.io/badge/status-v0.1%20%C2%B7%20Phase%200--6%20Implemented-22C55E?style=flat-square)
 ![MoonBit](https://img.shields.io/badge/MoonBit-v1.0.0--rc1%2B%20Workspace-8B5CF6?style=flat-square)
 ![Targets](https://img.shields.io/badge/targets-Native%20%C2%B7%20JS%20%2F%20Edge%20%C2%B7%20WASI-06B6D4?style=flat-square)
 ![Release](https://img.shields.io/badge/release-unmbt%2Fmoonset-F59E0B?style=flat-square)
@@ -44,9 +44,9 @@ Yo，欢迎误入（或者慕名点进）**ciallo** 的地盘！(ﾉ>ω<)ﾉ
 - **全平台随时空降 & 生态按需生长**：业务代码只写这一份！裸机挂 **`unmbt/ciallo-native`**（含 `SIGTERM` 拓扑逆序优雅停机 + 请求级 `TaskGroup` 取消传播）；边缘云挂 **`unmbt/ciallo-js`** 用 `--target js` 零依赖空降 Cloudflare Workers / Vercel Edge / Deno / Bun / Node.js；全部公开包自带面向 `mooncakes.io` AI Agent 的 **`SKILL.md`**，版本联动与拓扑发版全权交给同家族的 [`unmbt/moonset`](https://github.com/unmbt/moonset)！
 
 > [!NOTE]
-> **当前进度：Phase 0 · SDD 契约与规格已通过 `moonc v1.0.0-rc1 --deny-warn` 与 `moon fmt --check` 预检并锁定（Spec Ready，准备下铲写源码）**
-> 工程总纲 [AGENTS.md](AGENTS.md)、十二篇架构决策 [ADR-001 ~ ADR-012](docs/decisions/README.md) 以及 Web / 代码生成 / 测试 / 数据套件全量 `declare` 强类型接口契约已全部定稿。按三代清晰闭环推进：
-> - **`v0.1`（Web 立威 · Phase 0–6）**：`webstd`（一等公民结构化 `Cookie` + `status_reason` + `StreamError` + 四目标纯同步 `SseDecoder`/`NdjsonDecoder`）+ `ciallo`（统一 `Int32`/`UInt32` 规范名、强类型 `ContextKey[T]`、`EnvBuilder`/只读 `Env`、`AppBuildError`、`*_typed` & `*_sse_typed` 路由 + `with_query`、`NoContent` `204` 哨兵、`Nullable[T]` 三态与 `Base64Bytes`、防爆栈 `SchemaRef`、`Int64String` 字符串契约、双轨脱敏、手写 RFC 9457 `ProblemDetails`、有界队列取消安全 SSE 心跳、统一 `Page[T]`/`CursorPage[T]`）+ `ciallo-native`（纯 `native`：`idle_conns` 秒醒 + 子协程有界排空 + 早退未读 Body 断连 + UTF-8 `Content-Length` + 1:1 `Cookie` 桥接）+ `ciallo-js`（`FixedArray` FFI + `#export_name("fetch")` + `worker.mjs` 薄胶水）+ `ciallo-gen`（双模 `rule`/`dev_build` + `moonx`：`#ciallo.schema` 双拼写编译器委托 + 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TS RPC SDK）+ `ciallo-testing`（含 `sync_openapi`）+ 可离线转义 Scalar UI + 包级 `SKILL.md`；
+> **当前进度：`v0.1`（Phase 0 → Phase 6）已全面实施并通过全目标 `--deny-warn`、`moon fmt --check`、`tsc --noEmit --strict` 与 `moonset` 发版门禁**
+> 工程总纲 [AGENTS.md](AGENTS.md)、十三篇架构决策 [ADR-001 ~ ADR-013](docs/decisions/README.md) 以及 Web / 代码生成 / 测试 / 数据套件全量 `declare` 强类型接口契约已全部定稿。按三代清晰闭环推进：
+> - **`v0.1`（Web 立威 · Phase 0–6）**：`webstd`（一等公民结构化 `Cookie` + `status_reason` + `StreamError` + 四目标纯同步 `SseDecoder`/`NdjsonDecoder`）+ `ciallo`（统一 `Int32`/`UInt32` 规范名、强类型 `ContextKey[T]`、`EnvBuilder`/只读 `Env`、`AppBuildError`、`*_typed` & `*_sse_typed` 路由 + `with_query`、`NoContent` `204` 哨兵、`Nullable[T]` 三态与 `Base64Bytes`、防爆栈 `SchemaRef`、`Int64String` 字符串契约、双轨脱敏、手写 RFC 9457 `ProblemDetails`、有界队列取消安全 SSE 心跳、统一 `Page[T]`/`CursorPage[T]`）+ `ciallo-native`（纯 `native`：`idle_conns` 秒醒 + 子协程有界排空 + 早退未读 Body 断连 + UTF-8 `Content-Length` + 1:1 `Cookie` 桥接）+ `ciallo-js`（`FixedArray` FFI + `#export_name("fetch")` + `worker.mjs` 薄胶水）+ `ciallo-gen`（双模 `rule`/`dev_build` + `moonx`：`#ciallo.schema` 严格规范拼写编译器委托 + 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TS RPC SDK）+ `ciallo-testing`（含 `sync_openapi`）+ 可离线转义 Scalar UI + 包级 `SKILL.md`；
 > - **`v0.2`（全栈数据闭环 · Phase 7–9）**：`ciallo-data`（含 `Lease::mark_tainted` 脏连接驱逐）+ `ciallo-orm`（纯核 + 独立 PG/SQLite/D1 驱动桥接包 + `UserQueries[E]`）+ **`ciallo-migrate`** + 纯独立 `ciallo-redis`（纯值 `RedisKey` + `SingleFlight` 内置 `RedisClient`，配 `ciallo-redis-plugin`）+ ORM 事务回滚测试 + `ciallo-gen wire` 编译期 DI & `FieldMask`；
 > - **`v0.3`（企业级与 AI 生态 · Phase 10）**：按需 Tree-shake 的 **`ciallo-kit` 微包集群**（`config`/`Secret[T]`、`problem`、`log`、`id` UUIDv7、`security`、`resilience`、`actuator`、`otel`、`queue`）、**`ciallo-mcp`（路由即 MCP Server）** 与 WASI / WebSocket；`ciallo-mongo` 与 MySQL 方言归入独立孵化轨道。
 > 详见 [需求规格矩阵](docs/spec/requirements.md) 与 [执行路线图](docs/spec/roadmap-and-acceptance.md)。
@@ -187,13 +187,13 @@ let user = user_cache.get_or_load(redis, 42L, async fn() { users.find_user_by_id
 
 | 里程碑 | 阶段 | 攻略主题 | 当前状态 |
 |:-:|:-:|---|:-:|
-| **`v0.1`<br/>Web 立威** | 0 | Workspace SDD 规格、ADR 001～011 预检拍板与全量 `declare` 契约 | 规格已锁定（待探针落盘） |
-| | 1 | 独立 Web 标准包 `unmbt/webstd`（含 SSE/NDJSON）与 `router`（四目标） | 待解锁 |
-| | 2 | `schema` 校验 / Coercion / 双轨脱敏与 `openapi` 3.1 + Scalar UI（四目标） | 待解锁 |
-| | 3 | `runtime`（`Lifecycle`/`HealthCheck`/`TraceContext`）与 `core`（9 阶段 / Extractor / RFC 9457 / `CapabilityBundle`） | 待解锁 |
-| | 4 | `unmbt/ciallo-native`（优雅停机 + 取消传播）与 `unmbt/ciallo-js` | 待解锁 |
-| | 5 | `unmbt/ciallo-gen`（`#ciallo.schema` / 编译期 DI / `ciallo-eden` MoonBit+TS SDK）、`ciallo-testing`、`examples/` 与包级 `SKILL.md` | 待解锁 |
-| | 6 | 全目标 `--deny-warn`、`moonset` 拓扑发版演练与 `v0.1.0` 正式登场 | 待解锁 |
+| **`v0.1`<br/>Web 立威** | 0 | Workspace SDD 规格、ADR 001～013 与全量 `declare` 契约 | 已完成 |
+| | 1 | 独立 Web 标准包 `unmbt/webstd`（含 SSE/NDJSON）与 `router`（四目标） | 已完成 |
+| | 2 | `schema` 校验 / Coercion / 双轨脱敏与 `openapi` 3.1 + Scalar UI（四目标） | 已完成 |
+| | 3 | `runtime`（`Lifecycle`/`HealthCheck`/`TraceContext`）与 `core`（9 阶段 / Extractor / RFC 9457 / `CapabilityBundle`） | 已完成 |
+| | 4 | `unmbt/ciallo-native`（优雅停机 + 取消传播）与 `unmbt/ciallo-js` | 已完成 |
+| | 5 | `unmbt/ciallo-gen`（`#ciallo.schema` / `ciallo-eden` MoonBit+TS SDK）、`ciallo-testing`、`examples/` 与包级 `SKILL.md` | 已完成 |
+| | 6 | 全目标 `--deny-warn`、`moonset` 拓扑发版演练与 `v0.1.0` 正式收口 | 已完成 |
 | **`v0.2`<br/>数据闭环** | 7 | `unmbt/ciallo-data`（SQLCommenter / 取消传播）+ `unmbt/ciallo-orm` MVP（PG + SQLite/D1） | 数据闭环 |
 | | 8 | `unmbt/ciallo-gen` ORM 扩展（`#orm.*`/`#orm.sql`）+ **`unmbt/ciallo-migrate`**（Schema Diff / 防漂移 / Seed） | 数据闭环 |
 | | 9 | ORM 生产 Hook / Virtual Package 驱动 + **`unmbt/ciallo-redis`** + `ciallo-testing` 事务回滚测试 | 数据闭环 |
@@ -251,9 +251,9 @@ That's **ciallo** in a nutshell — cheerful and cheeky on the outside, obsessiv
 - **Deploy anywhere & tree-shake everything**: write your app logic once, deploy via **`unmbt/ciallo-native`** (`SIGTERM` reverse-topological graceful shutdown + per-request `TaskGroup` cancellation propagation) or **`unmbt/ciallo-js`** (`--target js` ESM for Cloudflare Workers / Vercel Edge / Deno / Bun / Node.js). Every public package ships a `SKILL.md` for AI agents on `mooncakes.io`, and releases are orchestrated via [`unmbt/moonset`](https://github.com/unmbt/moonset).
 
 > [!NOTE]
-> **Current status: Phase 0 — SDD Specs & Contracts Pre-checked on `moonc v1.0.0-rc1 --deny-warn` & `moon fmt --check` (Spec Ready).**
-> [AGENTS.md](AGENTS.md), [ADR-001 through ADR-012](docs/decisions/README.md), and full AI-native `declare` contracts are frozen across three sharp release waves:
-> - **`v0.1` (Web Launch · Phases 0–6)**: `webstd` (structured `Cookie`, `status_reason`, `StreamError`, 4-target sync `SseDecoder`/`NdjsonDecoder`) + `ciallo` (`Int32`/`UInt32` canonical types, `ContextKey[T]`, `EnvBuilder`/read-only `Env`, `AppBuildError`, `*_typed` & `*_sse_typed` routes + `with_query`, `NoContent` `204`, `Nullable[T]` PATCH tri-state & `Base64Bytes`, cycle-safe `SchemaRef`, `Int64String`, dual-track sanitization, hand-written RFC 9457 `ProblemDetails`, queue-isolated SSE heartbeats, unified `Page[T]`/`CursorPage[T]`) + `ciallo-native` (pure `native` + `idle_conns` + child-coroutine bounded drain + early-abort close + UTF-8 `Content-Length` + 1:1 `Cookie` bridge) + `ciallo-js` (`FixedArray` FFI + `#export_name("fetch")` + `worker.mjs` glue) + `ciallo-gen` (dual-mode `rule`/`dev_build` + `moonx`: `#ciallo.schema` dual-spelling AST + OpenAPI-driven `ciallo-eden` MoonBit/TS SDK) + `ciallo-testing` (`sync_openapi`) + offline-capable Scalar UI + package `SKILL.md`;
+> **Current status: `v0.1` (Phases 0–6) fully implemented and verified on `moonc v1.0.0-rc1 --deny-warn`, `moon fmt --check`, `tsc --noEmit --strict`, and `moonset` release gates.**
+> [AGENTS.md](AGENTS.md), [ADR-001 through ADR-013](docs/decisions/README.md), and full AI-native `declare` contracts are frozen across three sharp release waves:
+> - **`v0.1` (Web Launch · Phases 0–6)**: `webstd` (structured `Cookie`, `status_reason`, `StreamError`, 4-target sync `SseDecoder`/`NdjsonDecoder`) + `ciallo` (`Int32`/`UInt32` canonical types, `ContextKey[T]`, `EnvBuilder`/read-only `Env`, `AppBuildError`, `*_typed` & `*_sse_typed` routes + `with_query`, `NoContent` `204`, `Nullable[T]` PATCH tri-state & `Base64Bytes`, cycle-safe `SchemaRef`, `Int64String`, dual-track sanitization, hand-written RFC 9457 `ProblemDetails`, queue-isolated SSE heartbeats, unified `Page[T]`/`CursorPage[T]`) + `ciallo-native` (pure `native` + `idle_conns` + child-coroutine bounded drain + early-abort close + UTF-8 `Content-Length` + 1:1 `Cookie` bridge) + `ciallo-js` (`FixedArray` FFI + `#export_name("fetch")` + `worker.mjs` glue) + `ciallo-gen` (dual-mode `rule`/`dev_build` + `moonx`: `#ciallo.schema` canonical-spelling AST + OpenAPI-driven `ciallo-eden` MoonBit/TS SDK) + `ciallo-testing` (`sync_openapi`) + offline-capable Scalar UI + package `SKILL.md`;
 > - **`v0.2` (Full-Stack Data Loop · Phases 7–9)**: `ciallo-data` (`Lease::mark_tainted`) + `ciallo-orm` (pure core + standalone PG/SQLite/D1 driver bridges + `UserQueries[E]`) + **`ciallo-migrate`** + standalone `ciallo-redis` (stateless `RedisKey` + client-hosted `SingleFlight`, plus `ciallo-redis-plugin`) + ORM auto-rollback test helpers + `ciallo-gen wire` DI & `FieldMask`;
 > - **`v0.3` (Enterprise Kit & AI-Native · Phase 10)**: tree-shakable **`ciallo-kit`** micro-packages (`config`/`Secret[T]`, `problem`, `log`, `id` UUIDv7, `security`, `resilience`, `actuator`, `otel`, `queue`), **`ciallo-mcp` (routes as MCP Server)**, `ciallo-wasi` & WebSockets; `ciallo-mongo` and MySQL dialect live on an independent incubation track.
 
@@ -344,13 +344,13 @@ Built on standard-library `moonbitlang/core/async*` (**Tier 0/1 zero third-party
 
 | Wave | Phase | Milestone | Status |
 |:-:|:-:|---|:-:|
-| **`v0.1`<br/>Web Launch** | 0 | Workspace SDD specs, ADR-001 ~ ADR-011 & pre-checked `declare` contracts | Spec Locked (probes next) |
-| | 1 | Standalone `unmbt/webstd` (with SSE/NDJSON) & `router` (4 targets) | Queued |
-| | 2 | `schema` validation / coercion / dual-track normalization & `openapi` 3.1 + Scalar UI | Queued |
-| | 3 | `runtime` (`Lifecycle`/`HealthCheck`/`TraceContext`) & `core` (9-stage / Extractors / RFC 9457 / `CapabilityBundle`) | Queued |
-| | 4 | `unmbt/ciallo-native` (graceful shutdown + cancellation) & `unmbt/ciallo-js` | Queued |
-| | 5 | `unmbt/ciallo-gen` (`#ciallo.schema` / DI / `ciallo-eden` MoonBit+TS SDK), `ciallo-testing`, `examples/` & package `SKILL.md` | Queued |
-| | 6 | Multi-target `--deny-warn`, `moonset` topological dry-run & `v0.1.0` launch | Queued |
+| **`v0.1`<br/>Web Launch** | 0 | Workspace SDD specs, ADR-001 ~ ADR-013 & pre-checked `declare` contracts | Done |
+| | 1 | Standalone `unmbt/webstd` (with SSE/NDJSON) & `router` (4 targets) | Done |
+| | 2 | `schema` validation / coercion / dual-track normalization & `openapi` 3.1 + Scalar UI | Done |
+| | 3 | `runtime` (`Lifecycle`/`HealthCheck`/`TraceContext`) & `core` (9-stage / Extractors / RFC 9457 / `CapabilityBundle`) | Done |
+| | 4 | `unmbt/ciallo-native` (graceful shutdown + cancellation) & `unmbt/ciallo-js` | Done |
+| | 5 | `unmbt/ciallo-gen` (`#ciallo.schema` / `ciallo-eden` MoonBit+TS SDK), `ciallo-testing`, `examples/` & package `SKILL.md` | Done |
+| | 6 | Multi-target `--deny-warn`, `moonset` topological dry-run & `v0.1.0` launch | Done |
 | **`v0.2`<br/>Data Loop** | 7 | `unmbt/ciallo-data` (SQLCommenter / cancel) + `unmbt/ciallo-orm` MVP (PG + SQLite/D1) | Data Loop |
 | | 8 | `unmbt/ciallo-gen` ORM (`#orm.*`/`#orm.sql`) + **`unmbt/ciallo-migrate`** (Diff / Drift / Seed) | Data Loop |
 | | 9 | Production ORM hooks & Virtual Package drivers + **`unmbt/ciallo-redis`** + `ciallo-testing` rollback tx | Data Loop |

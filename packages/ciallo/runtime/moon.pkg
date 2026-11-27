@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/async",
+  "unmbt/webstd/http",
+}
+
+supported_targets = "-all+native+js+wasm"
+
+options(
+  "allow-experimental-packages": [ "moonbitlang/core/async" ],
+)

@@ -6,7 +6,7 @@ AI 智能体必须按 **v0.1（Phase 0 → Phase 6）→ v0.2（Phase 7 → Phas
 
 ## v0.1：Web 立威 · 最小惊艳闭环（Phase 0 ~ Phase 6）
 
-> **里程碑目标**：打透 `webstd`（含一等公民 SSE / NDJSON）+ `ciallo`（全仓规范名 `Int32`/`UInt32`、9 阶段管线、首次 `fetch` 冻结、`AppBuildError`、`Nullable[T]` 三态 & `Base64Bytes`、双轨零开销脱敏、原生 `raise` Extractor、RFC 9457、有界队列 SSE 心跳、Scalar 文档 UI、`Lifecycle` / `CapabilityBundle`）+ `ciallo-native`（子协程有界排空 + 早退断连 + UTF-8 `Content-Length`）+ `ciallo-js`（`FixedArray` FFI）+ `ciallo-gen`（`#ciallo.schema` 双拼写编译器委托 + `ciallo-eden` MoonBit/TypeScript RPC SDK）+ `ciallo-testing`（流式 `TestClient` + `sync_openapi`）+ 全包 `SKILL.md`。
+> **里程碑目标**：打透 `webstd`（含一等公民 SSE / NDJSON）+ `ciallo`（全仓规范名 `Int32`/`UInt32`、9 阶段管线、首次 `fetch` 冻结、`AppBuildError`、`Nullable[T]` 三态 & `Base64Bytes`、双轨零开销脱敏、原生 `raise` Extractor、RFC 9457、有界队列 SSE 心跳、Scalar 文档 UI、`Lifecycle` / `CapabilityBundle`）+ `ciallo-native`（子协程有界排空 + 早退断连 + UTF-8 `Content-Length`）+ `ciallo-js`（`FixedArray` FFI）+ `ciallo-gen`（`#ciallo.schema` 严格规范拼写编译器委托 + `ciallo-eden` MoonBit/TypeScript RPC SDK）+ `ciallo-testing`（流式 `TestClient` + `sync_openapi`）+ 全包 `SKILL.md`。
 
 ### Phase 0：Workspace 脚手架、`moonset` 配置、`wasm` I/O 微探针与纯签名 `declare` 基线
 
@@ -90,10 +90,10 @@ AI 智能体必须按 **v0.1（Phase 0 → Phase 6）→ v0.2（Phase 7 → Phas
 
 ### Phase 5：`unmbt/ciallo-gen`（v0.1）、`unmbt/ciallo-testing`、门面与同源双端 `examples/`
 
-* **目标**：落地统一代码生成器 `unmbt/ciallo-gen`（`#ciallo.schema` 双拼写兼容 `Int32|Int`、`UInt32|UInt`、`T?|Option[T]` 委托 `@schema.schema_ref_of` + **配合 `sync_openapi` 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TypeScript 双端 RPC SDK** + `--check` 防漂移）、`unmbt/ciallo-testing`、门面 `exports.mbt`、同源双端 `examples/` 与各公开模块 `SKILL.md`。
+* **目标**：落地统一代码生成器 `unmbt/ciallo-gen`（`#ciallo.schema` 严格识别 `moon fmt`/`moon fix` 规范拼写 `Int32`/`UInt32`/`T?` 委托 `@schema.schema_ref_of`，遇旧写法 `Int`/`UInt`/`Option[T]` 输出行号诊断 + **配合 `sync_openapi` 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TypeScript 双端 RPC SDK** + `--check` 防漂移）、`unmbt/ciallo-testing`、门面 `exports.mbt`、同源双端 `examples/` 与各公开模块 `SKILL.md`。
 * **测试先行用例与验收要点**：
   * **`unmbt/ciallo-gen`**：
-    * `#ciallo.schema` 生成 `impl @schema.Schema`（含双拼写 `Int`/`Int32`、`String?`/`Option[String]`、`Nullable[String]?` 三态、无载荷 `enum`、`SchemaRef` 断环，以及带载荷 ADT 行号诊断报错）快照测试；
+    * `#ciallo.schema` 生成 `impl @schema.Schema`（覆盖 `Int32`/`UInt32`/`String?`/`Nullable[String]?` 三态、无载荷 `enum`、`SchemaRef` 断环，以及旧写法 `Int`/`UInt`/`Option[T]` 与带载荷 ADT 行号诊断报错）快照测试；
     * **`ciallo-eden --from openapi.json` 双端 RPC 生成测试**：针对 `examples/shared-api` 经 `sync_openapi` 导出的 `openapi.json` 生成强类型 MoonBit SDK 与零依赖 TypeScript SDK（断言 `Int64String` 映射为 `string`、`Nullable[T]` 映射为 `T | null`、可选字段 `T?` 映射为 `?: T`、`NoContent` 映射为 `Promise<void>`、SSE 映射为 `AsyncGenerator`），通过 `tsc --noEmit` 严格校验与 `--check` 漂移检测。
   * **`unmbt/ciallo-testing`**：流式 `TestClient` 完成结构化 Cookie Jar 登录态维持、Bearer 注入、`sync_openapi` 快照防漂移校验。
   * **`examples/*`（`private = true`）**：`examples/shared-api` 通过仓库内双模 `rule` 触发 `dev_build`，展示 `#ciallo.schema` + `post_typed` + `get_sse_typed` + `NoContent` + `ContextKey[T]` + Scalar `/docs`；同一业务在 `examples/native-server` 与 `examples/cf-worker`（`pkgtype(kind: "foreign_library")` + `#export_name("fetch")` + `worker.mjs`）跑通。

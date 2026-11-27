@@ -1,0 +1,10 @@
+import {
+  "moonbitlang/core/string",
+}
+
+import {
+  "moonbitlang/core/json",
+  "unmbt/ciallo-gen" @ciallo_gen,
+} for "test"
+
+supported_targets = "-all+wasm+native"

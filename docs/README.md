@@ -1,9 +1,9 @@
 # unmbt/ciallo Workspace 文档与规范
 
-> 状态：Phase 0 文档与契约已通过 `moonc v1.0.0-rc1 --deny-warn` 与 `moon fmt --check` 预检并锁定（P0 SDD 治理规范、ADR 001～012、Workspace 多模块架构、全量 Web / 生成器 / 测试 / 数据套件 `declare` 契约与 `wasm` `moonrun` 文件读写微探针已对齐；尚未落盘源码）。
+> 状态：**`v0.1` Web 立威闭环（Phase 0 → Phase 6）已全面实施并通过全目标 `--deny-warn`、`moon fmt --check`、`tsc --noEmit --strict` 与 `unmbt/moonset` 拓扑发版预演**（ADR-001 ~ ADR-013 全部锁定，6 个公开模块 + 3 个私有同源验证示例均已落盘验收）。
 >
 > 本目录是 **`ciallo` Workspace** 的规格、设计决策与交付契约，按清晰的三代里程碑 + 独立孵化轨道演进：
-> - **`v0.1`（Web 立威闭环）**：`unmbt/webstd`（独立四目标纯核：一等公民结构化 `Cookie` + `status_reason` + `StreamError` + 纯同步 `SseDecoder`/`NdjsonDecoder` + 条件三目标异步流测试）、`unmbt/ciallo`（全仓规范名 `Int32`/`UInt32`、阶段 1–2 间路由锚点与首次 `fetch` 冻结、`use_plugin` 深拷贝六项合并、`AppBuildError`、强类型 `ContextKey[T]`、`EnvBuilder`/只读 `Env`、`*_typed` & `*_sse_typed` 路由 + `with_query`、`NoContent` `204` 哨兵、`Nullable[T]`/`Base64Bytes`、`SchemaRef` 防递归爆栈、`Int64String` 字符串契约、`contains_dynamic_or_sensitive` + `schema_id` 双轨脱敏、手写 RFC 9457 `ProblemDetails`、有界队列取消安全 SSE 心跳、统一 `Page[T]`/`CursorPage[T]`、OpenAPI 3.1 + 离线转义 Scalar UI、`Lifecycle` + `CapabilityBundle`）、`unmbt/ciallo-native`（纯 `native`：`idle_conns` + 子协程有界排空 + 早退未读 Body 断连 + UTF-8 `Content-Length` + 1:1 `Cookie` 桥接） / `unmbt/ciallo-js`（`FixedArray` FFI + `#export_name("fetch")` + `worker.mjs` 薄胶水）、`unmbt/ciallo-gen`（双模 `rule`/`dev_build` + `moonx`：`#ciallo.schema` 双拼写编译器委托 + 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TypeScript RPC SDK）与 `unmbt/ciallo-testing`（流式 `TestClient` + `sync_openapi`）；
+> - **`v0.1`（Web 立威闭环）**：`unmbt/webstd`（独立四目标纯核：一等公民结构化 `Cookie` + `status_reason` + `StreamError` + 纯同步 `SseDecoder`/`NdjsonDecoder` + 条件三目标异步流测试）、`unmbt/ciallo`（全仓规范名 `Int32`/`UInt32`、阶段 1–2 间路由锚点与首次 `fetch` 冻结、`use_plugin` 深拷贝六项合并、`AppBuildError`、强类型 `ContextKey[T]`、`EnvBuilder`/只读 `Env`、`*_typed` & `*_sse_typed` 路由 + `with_query`、`NoContent` `204` 哨兵、`Nullable[T]`/`Base64Bytes`、`SchemaRef` 防递归爆栈、`Int64String` 字符串契约、`contains_dynamic_or_sensitive` + `schema_id` 双轨脱敏、手写 RFC 9457 `ProblemDetails`、有界队列取消安全 SSE 心跳、统一 `Page[T]`/`CursorPage[T]`、OpenAPI 3.1 + 离线转义 Scalar UI、`Lifecycle` + `CapabilityBundle`）、`unmbt/ciallo-native`（纯 `native`：`idle_conns` + 子协程有界排空 + 早退未读 Body 断连 + UTF-8 `Content-Length` + 1:1 `Cookie` 桥接） / `unmbt/ciallo-js`（`FixedArray` FFI + `#export_name("fetch")` + `worker.mjs` 薄胶水）、`unmbt/ciallo-gen`（双模 `rule`/`dev_build` + `moonx`：`#ciallo.schema` 严格规范拼写编译器委托 + 消费 `openapi.json` 的 `ciallo-eden` MoonBit/TypeScript RPC SDK）与 `unmbt/ciallo-testing`（流式 `TestClient` + `sync_openapi`）；
 > - **`v0.2`（全栈数据闭环）**：`unmbt/ciallo-data`（含 `Pool` `Lease::mark_tainted` 污染驱逐）、`unmbt/ciallo-orm`（纯核心 + 独立 PG/SQLite/D1 驱动桥接包 + `SqlExecutor` / `UserQueries[E]`）、`unmbt/ciallo-migrate`（Schema Diff + 防漂移）、纯独立 `unmbt/ciallo-redis`（无状态纯值 `RedisKey` + `SingleFlight` 内置 `RedisClient`，配轻量 Web 桥接 `unmbt/ciallo-redis-plugin`）、`ciallo-testing` 用例级事务回滚测试，以及 `ciallo-gen wire` 编译期 DI 与 `FieldMask`；
 > - **`v0.3`（企业级与 AI 生态）**：按需 Tree-shake 微包集群 `ciallo-kit`（`config`/`problem`/`log`/`id`/`security`/`resilience`/`actuator`/`otel`/`queue`）、**`unmbt/ciallo-mcp`**（复用 `openapi.json` 路由即 MCP Server）、`unmbt/ciallo-wasi` 与 WebSocket；
 > - **独立孵化轨道**：`unmbt/ciallo-mongo` 与 MySQL 方言扩展（完整契约保留于 [data-suite-contracts.md](spec/data-suite-contracts.md)，不阻塞主线节奏）。
@@ -17,7 +17,7 @@
 5. [核心算法、生命周期管线与跨平台适配器机制](spec/algorithms-and-mechanisms.md)：Radix 路由算法、9 阶段生命周期、作用域隔离与去重、原生 `raise` Extractor、双轨零开销脱敏、RFC 9457、W3C `traceparent` + SQLCommenter、拓扑 `Lifecycle` 与请求级取消传播机制。
 6. [分阶段 SDD 执行路线与验收门禁](spec/roadmap-and-acceptance.md)：`v0.1`（Phase 0～6）、`v0.2`（Phase 7～9）、`v0.3`（Phase 10）与孵化轨道串行推进计划、TDD 必测用例、`--deny-warn` + `moonset` 发布门禁与包级 `SKILL.md` 规范。
 7. [Web 标准调研剖析与 MoonBit 版架构设计](references.md)：WinterTC（ECMA-429）演进、Hono / h3 / ElysiaJS + Spring Boot / GoFrame / Rust Tower / MCP 架构剖析以及 `ciallo` Workspace 全景总结。
-8. [决策记录（ADR）](decisions/README.md)：关键架构选型（ADR-001 ~ ADR-012）。
+8. [决策记录（ADR）](decisions/README.md)：关键架构选型（ADR-001 ~ ADR-013）。
 
 ## SDD 工作规则
 

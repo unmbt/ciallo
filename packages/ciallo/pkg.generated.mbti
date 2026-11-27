@@ -1,0 +1,177 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/ciallo"
+
+import {
+  "moonbitlang/core/json",
+  "unmbt/ciallo/core",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/router",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo/schema",
+  "unmbt/webstd/http",
+  "unmbt/webstd/url",
+}
+
+// Values
+pub fn build_document(@openapi.OpenApiInfo, Array[@openapi.OperationSpec]) -> @openapi.OpenApiDocument raise @openapi.OpenApiError
+
+pub fn coerce_query_params(Map[String, Array[String]], @schema.SchemaNode) -> @json.Json raise @schema.ValidationError
+
+pub fn coerce_string_map(Map[String, String], @schema.SchemaNode) -> @json.Json raise @schema.ValidationError
+
+pub fn normalize_json(@json.Json, @schema.SchemaNode) -> @json.Json
+
+pub let remote_addr_key : @runtime.ContextKey[String]
+
+pub fn scalar_html(title~ : String, spec_url? : String, script_url? : String, custom_css? : String) -> String
+
+pub fn[T : @schema.Schema] schema_of(T?) -> @schema.SchemaNode
+
+pub fn[T : @schema.Schema] schema_ref_of(T?) -> @schema.SchemaNode
+
+pub fn status_reason(Int32) -> String
+
+pub fn validate_json(@json.Json, @schema.SchemaNode) -> Array[@schema.ValidationIssue]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+pub using @core {type App}
+
+pub using @core {type AppBuildError}
+
+pub using @core {type AppOptions}
+
+pub using @schema {type Base64Bytes}
+
+pub using @http {type Body}
+
+pub using @http {type ByteStream}
+
+pub using @core {type Context}
+
+pub using @runtime {type ContextKey}
+
+pub using @http {type Cookie}
+
+pub using @http {type CookieOptions}
+
+pub using @schema {type CursorPage}
+
+pub using @runtime {type Env}
+
+pub using @runtime {type EnvBuilder}
+
+pub using @runtime {type ExecutionContext}
+
+pub using @runtime {type FixedClock}
+
+pub using @http {type Headers}
+
+pub using @runtime {type HealthStatus}
+
+pub using @core {type HttpError}
+
+pub using @core {type LifecyclePhase}
+
+pub using @runtime {type MemoryKv}
+
+pub using @http {type Method}
+
+pub using @runtime {type MockHttpClient}
+
+pub using @http {type NdjsonDecoder}
+
+pub using @schema {type NoContent}
+
+pub using @schema {type Nullable}
+
+pub using @schema {type ObjectField}
+
+pub using @openapi {type OpenApiDocument}
+
+pub using @openapi {type OpenApiError}
+
+pub using @openapi {type OpenApiInfo}
+
+pub using @openapi {type OperationSpec}
+
+pub using @schema {type Page}
+
+pub using @core {type PluginMeta}
+
+pub using @core {type ProblemDetails}
+
+pub using @http {type Request}
+
+pub using @http {type Response}
+
+pub using @openapi {type ResponseKind}
+
+pub using @openapi {type ResponseSpec}
+
+pub using @router {type RouteConflict}
+
+pub using @router {type RouteMatch}
+
+pub using @core {type RouteOptions}
+
+pub using @router {type RouteParams}
+
+pub using @router {type Router}
+
+pub using @runtime {type RuntimeError}
+
+pub using @http {type SameSite}
+
+pub using @schema {type SchemaMeta}
+
+pub using @schema {type SchemaNode}
+
+pub using @schema {type SchemaRef}
+
+pub using @core {type Scope}
+
+pub using @http {type SseDecoder}
+
+pub using @http {type SseEvent}
+
+pub using @http {type StreamError}
+
+pub using @runtime {type TraceContext}
+
+pub using @core {type TraceEvent}
+
+pub using @core {type TraceSummary}
+
+pub using @http {type TypedSseEvent}
+
+pub using @url {type Url}
+
+pub using @url {type UrlError}
+
+pub using @schema {type ValidationError}
+
+pub using @schema {type ValidationIssue}
+
+pub using @core {trait CapabilityBundle}
+
+pub using @runtime {trait Clock}
+
+pub using @core {trait FromParam}
+
+pub using @runtime {trait HealthCheck}
+
+pub using @runtime {trait HttpClient}
+
+pub using @core {trait IntoResponse}
+
+pub using @runtime {trait KvStore}
+
+pub using @runtime {trait Lifecycle}
+
+pub using @schema {trait Schema}
+
+// Traits

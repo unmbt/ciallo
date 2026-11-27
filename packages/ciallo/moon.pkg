@@ -1,0 +1,10 @@
+import {
+  "unmbt/webstd",
+  "unmbt/ciallo/router",
+  "unmbt/ciallo/schema",
+  "unmbt/ciallo/openapi",
+  "unmbt/ciallo/runtime",
+  "unmbt/ciallo/core",
+}
+
+supported_targets = "-all+native+js+wasm"

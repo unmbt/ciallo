@@ -1,0 +1,40 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "unmbt/webstd/url"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn decode_query_component(StringView) -> String raise UrlError
+
+pub fn encode_query_component(StringView) -> String
+
+pub fn percent_decode(StringView) -> String raise UrlError
+
+pub fn percent_encode(StringView) -> String
+
+// Errors
+#non_exhaustive
+#derive(Eq, @debug.Debug)
+pub(all) suberror UrlError {
+  InvalidUrl(String)
+  InvalidPercentEncoding(String)
+  NullByteForbidden
+}
+
+// Types and methods
+#derive(Eq, @debug.Debug)
+pub(all) struct Url {
+  scheme : String
+  host : String
+  path : String
+  raw_query : String
+}
+pub fn Url::parse(StringView) -> Self raise UrlError
+pub fn Url::query_first(Self, StringView) -> String? raise UrlError
+pub fn Url::query_params(Self) -> Map[String, Array[String]] raise UrlError
+
+// Type aliases
+
+// Traits
