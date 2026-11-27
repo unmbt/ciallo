@@ -1,6 +1,6 @@
 name = "unmbt/ciallo-native"
 
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.mbt.md"
 
@@ -17,6 +17,6 @@ preferred_target = "native"
 supported_targets = "-all+native"
 
 import {
-  "unmbt/webstd@0.1.0",
-  "unmbt/ciallo@0.1.0",
+  "unmbt/webstd@0.1.1",
+  "unmbt/ciallo@0.1.1",
 }

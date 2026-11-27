@@ -1,6 +1,6 @@
 name = "unmbt/ciallo-migrate"
 
-version = "0.1.0"
+version = "0.1.1"
 
 readme = "README.mbt.md"
 
@@ -17,6 +17,6 @@ preferred_target = "native"
 supported_targets = "-all+native+js+wasm"
 
 import {
-  "unmbt/ciallo-data@0.1.0",
-  "unmbt/ciallo-orm@0.1.0",
+  "unmbt/ciallo-data@0.1.1",
+  "unmbt/ciallo-orm@0.1.1",
 }
