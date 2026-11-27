@@ -1,0 +1,116 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-15, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: hustcer/setup-moonbit@v1
+        with:
+          version: '0.10.22+124d61d05'
+          core-version: '0.10.22+124d61d05'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - run: moon update
+      - name: Lint GitHub workflows & gitattributes
+        run: moon run scripts/lint-workflows.mbtx
+      - name: Build ciallo-gen Wasm CLI
+        run: moon build packages/gen/cmd/ciallo-gen --target wasm
+      - name: Check all 4 targets (--deny-warn)
+        shell: bash
+        run: |
+          set -euo pipefail
+          moon check --target native --deny-warn
+          moon check --target js --deny-warn
+          moon check --target wasm --deny-warn
+          moon check --target wasm-gc --deny-warn
+      - name: Test all 4 targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          moon test --target native
+          moon test --target js
+          moon test --target wasm
+          moon test --target wasm-gc
+      - name: Verify ciallo-gen artifacts (--check)
+        shell: bash
+        run: |
+          set -euo pipefail
+          GEN_WASM="_build/wasm/debug/build/unmbt/ciallo-gen/cmd/ciallo-gen/ciallo-gen.wasm"
+          moonrun "$GEN_WASM" schema examples/shared-api/dto.mbt -o examples/shared-api/dto.schema.gen.mbt --check
+          moonrun "$GEN_WASM" eden --from examples/shared-api/openapi.json --target ts -o examples/shared-api/api.client.ts --check
+      - name: Build and smoke-test Cloudflare Worker ESM bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          moon build examples/cf-worker --target js --release
+          node --input-type=module <<'EOF'
+          import worker from "./examples/cf-worker/worker.mjs";
+          const res = await worker.fetch(new Request("https://ciallo.test/health"), {}, { waitUntil() {} });
+          const text = await res.text();
+          if (res.status !== 200 || !text.includes('"ok":true')) {
+            console.error("Unexpected worker response:", res.status, text);
+            process.exit(1);
+          }
+          console.log("cf-worker smoke OK:", res.status, text);
+          EOF
+      - run: moon info
+      - run: moon fmt --check
+      - name: Verify clean working tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --exit-code
+          if [ -n "$(git status --porcelain)" ]; then
+            git status --short
+            git ls-files --eol --modified
+            exit 1
+          fi
+
+  typecheck-eden-ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Type-check generated Eden TypeScript SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx -y -p typescript tsc --noEmit --strict --target ES2022 --module ESNext --lib ES2022,DOM examples/shared-api/api.client.ts
+
+  actionlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install and run actionlint
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tmp_dir="$(mktemp -d)"
+          trap 'rm -rf "$tmp_dir"' EXIT
+          gh release download -R rhysd/actionlint -p 'actionlint_*_linux_amd64.tar.gz' -D "$tmp_dir"
+          tar -xzf "$tmp_dir"/actionlint_*_linux_amd64.tar.gz -C "$tmp_dir"
+          "$tmp_dir/actionlint"

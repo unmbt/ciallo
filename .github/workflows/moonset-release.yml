@@ -1,0 +1,83 @@
+name: Release ciallo
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: moonset-release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions: {}
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    concurrency:
+      group: moonset-publish
+      cancel-in-progress: false
+    permissions:
+      contents: write
+      id-token: write
+    outputs:
+      published: ${{ steps.release.outputs.published }}
+      tags: ${{ steps.release.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Check for pending release state
+        id: check-state
+        shell: bash
+        run: |
+          if [ -f .moonset/release-state.json ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: hustcer/setup-moonbit@v1
+        if: steps.check-state.outputs.present == 'true'
+        with:
+          version: '0.10.22+124d61d05'
+          core-version: '0.10.22+124d61d05'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - if: steps.check-state.outputs.present == 'true'
+        run: moon update
+      - id: release
+        if: steps.check-state.outputs.present == 'true'
+        uses: unmbt/moonset@v1
+        with:
+          mode: publish
+          mooncakes-credentials: ${{ secrets.MOONCAKES_CREDENTIALS }}
+          create-github-releases: 'true'
+      - name: Upload publish status artifact
+        if: always() && steps.check-state.outputs.present == 'true'
+        uses: actions/upload-artifact@v7
+        with:
+          name: moonset-publish-state
+          path: .moonset/publish-state.json
+          if-no-files-found: ignore
+
+  version-pr:
+    needs: publish
+    if: always() && needs.publish.result != 'cancelled'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      has-changesets: ${{ steps.release.outputs.has-changesets }}
+      pull-request-number: ${{ steps.release.outputs.pull-request-number }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - id: release
+        uses: unmbt/moonset@v1
+        with:
+          mode: version-pr
+          title: 'chore: release packages'
+          commit-message: 'chore: release'

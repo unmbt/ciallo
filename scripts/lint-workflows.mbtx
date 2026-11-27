@@ -1,0 +1,204 @@
+----
+import {
+  "moonbitlang/core/async",
+  "moonbitlang/core/async/fs",
+}
+----
+
+///|
+fn fail_lint(path : String, message : String) -> Unit raise {
+  fail(path + ": " + message)
+}
+
+///|
+fn contains_unsafe_interpolation(line : String) -> Bool {
+  line.contains("${{ github.event.") ||
+  line.contains("${{ inputs.") ||
+  line.contains("${{ github.head_ref") ||
+  line.contains("${{ steps.")
+}
+
+///|
+fn check_run_blocks(path : String, lines : Array[String]) -> Unit raise {
+  let mut in_run = false
+  let mut run_indent = 0
+  for i, raw in lines {
+    let line = raw
+    let trimmed = line.trim().to_owned()
+    let indent = line.length() - line.trim_start().length()
+    if in_run {
+      if trimmed != "" && indent <= run_indent {
+        in_run = false
+      } else {
+        if contains_unsafe_interpolation(line) {
+          fail_lint(
+            path,
+            "line " +
+            (i + 1).to_string() +
+            ": unsafe template interpolation in run block; bind via env: first",
+          )
+        }
+        continue
+      }
+    }
+    if trimmed.has_prefix("run:") || trimmed.has_prefix("- run:") {
+      let after = match trimmed.find("run:") {
+        Some(idx) => trimmed[idx + 4:].trim().to_owned()
+        None => ""
+      }
+      if after == "|" ||
+        after == "|-" ||
+        after == ">" ||
+        after == ">-" ||
+        after == "" {
+        in_run = true
+        run_indent = indent
+      } else if contains_unsafe_interpolation(after) {
+        fail_lint(
+          path,
+          "line " +
+          (i + 1).to_string() +
+          ": unsafe inline run interpolation; bind via env: first",
+        )
+      }
+    }
+  }
+}
+
+///|
+fn check_workflow(path : String, text : String) -> Unit raise {
+  let lines = text
+    .replace_all(old="\r\n", new="\n")
+    .split("\n")
+    .map(x => x.to_owned())
+    .collect()
+  check_run_blocks(path, lines)
+  if !text.contains("pull_request_target") {
+    return
+  }
+  let mut in_jobs = false
+  let mut job_name = ""
+  let mut job_lines : Array[String] = []
+  let jobs : Array[(String, Array[String])] = []
+  for line in lines {
+    let trimmed = line.trim().to_owned()
+    let indent = line.length() - line.trim_start().length()
+    if trimmed == "jobs:" && indent == 0 {
+      in_jobs = true
+      continue
+    }
+    if in_jobs &&
+      indent == 2 &&
+      trimmed.has_suffix(":") &&
+      !trimmed.has_prefix("#") {
+      if job_name != "" {
+        jobs.push((job_name, job_lines))
+      }
+      job_name = trimmed[:trimmed.length() - 1].to_owned()
+      job_lines = []
+      continue
+    }
+    if in_jobs && job_name != "" {
+      job_lines.push(line)
+    }
+  }
+  if job_name != "" {
+    jobs.push((job_name, job_lines))
+  }
+  for pair in jobs {
+    let (name, jlines) = pair
+    let body = jlines.join("\n")
+    let checks_out_pr = body.contains("pull_request.head") ||
+      body.contains("refs/pull/")
+    if checks_out_pr {
+      if !body.contains("persist-credentials: false") {
+        fail_lint(
+          path,
+          "job `" +
+          name +
+          "` checks out PR head under pull_request_target without `persist-credentials: false`",
+        )
+      }
+      if body.contains(": write") {
+        fail_lint(
+          path,
+          "job `" +
+          name +
+          "` checks out PR head under pull_request_target and must not request write permissions",
+        )
+      }
+      for jline in jlines {
+        let jt = jline.trim().to_owned()
+        if jt.contains("moon build") ||
+          jt.contains("moon test") ||
+          jt.contains("npm install") ||
+          jt.contains("pnpm install") ||
+          jt.contains("cargo build") {
+          fail_lint(
+            path,
+            "job `" +
+            name +
+            "` runs untrusted build/install command under pull_request_target: " +
+            jt,
+          )
+        }
+      }
+    }
+  }
+}
+
+///|
+async fn check_gitattributes() -> Unit {
+  let path = ".gitattributes"
+  if !@fs.exists(path) {
+    fail_lint(
+      path,
+      "missing .gitattributes (must enforce eol=lf to prevent Windows CRLF CI failures)",
+    )
+  }
+  let text = @fs.read_text(path).replace_all(old="\r\n", new="\n")
+  let mut has_lf_rule = false
+  for raw in text.split("\n") {
+    let line = raw.trim().to_owned()
+    if line == "" || line.has_prefix("#") {
+      continue
+    }
+    if line.has_prefix("* ") && line.contains("eol=lf") {
+      has_lf_rule = true
+      break
+    }
+  }
+  if !has_lf_rule {
+    fail_lint(
+      path,
+      "must contain a `* ... eol=lf` rule to keep generated .mbti/.mbt files LF on Windows",
+    )
+  }
+}
+
+///|
+async fn main {
+  check_gitattributes()
+  let dir = ".github/workflows"
+  if !@fs.exists(dir) {
+    fail_lint(dir, "missing .github/workflows directory")
+  }
+  let entries = @fs.readdir(dir, sort=true)
+  let workflows : Array[String] = []
+  for name in entries {
+    if name.has_suffix(".yml") || name.has_suffix(".yaml") {
+      workflows.push(dir + "/" + name)
+    }
+  }
+  if workflows.is_empty() {
+    fail_lint(dir, "no workflow YAML files discovered")
+  }
+  for path in workflows {
+    check_workflow(path, @fs.read_text(path))
+  }
+  println(
+    "Workflow & gitattributes lint passed (" +
+    workflows.length().to_string() +
+    " workflows)",
+  )
+}
